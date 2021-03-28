@@ -8,7 +8,6 @@
             language: 'javascript'
         })
     })
-
 </script>
 
 <main>

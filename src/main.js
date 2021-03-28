@@ -1,4 +1,3 @@
-import './global.css';
 import "tailwindcss/tailwind.css"
 import App from './components/App.svelte';
 
