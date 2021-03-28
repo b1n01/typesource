@@ -1,4 +1,5 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 
 const mode = process.env.NODE_ENV || 'development';
@@ -18,7 +19,7 @@ module.exports = {
 	output: {
 		path: path.join(__dirname, '/public'),
 		filename: '[name].js',
-		chunkFilename: '[name].[id].js'
+		chunkFilename: 'build/chunks/[name].[id].js'
 	},
 	module: {
 		rules: [
@@ -38,7 +39,12 @@ module.exports = {
 			{
 				test: /\.css$/,
 				use: [
-					MiniCssExtractPlugin.loader,
+					{
+						loader: MiniCssExtractPlugin.loader,
+						options: {
+							publicPath: '../' // required to load monaco .ttf file
+						}
+					},
 					'css-loader',
 					'postcss-loader',
 				]
@@ -49,17 +55,32 @@ module.exports = {
 				resolve: {
 					fullySpecified: false
 				}
-			}
+			},
+			{
+				test: /\.ttf$/,
+				use: [
+					{
+						loader: 'file-loader',
+						options: {
+							name: './build/[contenthash].[ext]', // output .fft assets on build folder
+						}
+					},
+				]
+			},
 		]
 	},
-	mode,
 	plugins: [
 		new MiniCssExtractPlugin({
 			filename: '[name].css'
-		})
+		}),
+		new MonacoWebpackPlugin({
+			filename: "./build/[name].worker.js", // output workers on build folder
+			//publicPath: "./build/"
+		}),
 	],
 	devtool: prod ? false : 'source-map',
 	devServer: {
 		hot: true
-	}
+	},
+	mode
 };
