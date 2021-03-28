@@ -1,28 +1,35 @@
 # Typesource
+
 Practice touch typing on source code
 
-## Get started
+## Up and running
 
-This project is created with template for [Svelte](https://svelte.dev). It lives at https://github.com/sveltejs/template-webpack.
-
-```bash
-npx degit sveltejs/template-webpack svelte-app
-cd svelte-app
-```
-
-Install the dependencies
+### Svelte 
+This project is created with the [webpack Svelte template](https://github.com/sveltejs/template-webpack), to spin it up install the dependencies:
 
 ```bash
 npm install
 ```
 
-Then start webpack
+Then start webpack dev server:
 
 ```bash
 npm run dev
 ```
 
-Navigate to [localhost:8080](http://localhost:8080). You should see your app running.
+Finally navigate to [localhost:8080](http://localhost:8080).
+
+### Tailwind
+
+This projects uses [Tailwind](https://tailwindcss.com/), it is cofigured in `tailwind.config.js` and is imported with [Postcss](https://postcss.org/) which is impoted with [webpack post-css loader](https://github.com/webpack-contrib/postcss-loader) is configured in `postcss.config.js`.
+
+## Build
+
+To create a production build just run:
+
+```bash
+npm run build
+```
 
 ## Requirements
 
@@ -50,13 +57,13 @@ Navigate to [localhost:8080](http://localhost:8080). You should see your app run
 - At the end of the 60 senconds match the user who typed more words wins
 - After the match the room is alive and the player can pick a different file and start a new match
 
-## Nice to have
+### Nice to have
 
 - Match making with strangers
 - The user can create a room on a selected file, other player can search "active" room by languges
 and join the room without manually sharing the invitation token
 
-## Todo
+### Todo
 
 - Handle Github rest api rate limit for non authenticated users
 - Should we use [https://github.com/octokit/rest.js](https://github.com/octokit/rest.js)
