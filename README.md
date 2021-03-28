@@ -23,6 +23,8 @@ Finally navigate to [localhost:8080](http://localhost:8080).
 
 This projects uses [Tailwind](https://tailwindcss.com/), it is cofigured in `tailwind.config.js` and is imported with [Postcss](https://postcss.org/) which is impoted with [webpack post-css loader](https://github.com/webpack-contrib/postcss-loader) is configured in `postcss.config.js`.
 
+Install the [Tailwind Intellisess](https://tailwindcss.com/docs/intellisense) vscode extention and set the vscode config `"editor.quickSuggestions": true` to enable autosuggestion (see [github issue](https://github.com/tailwindlabs/tailwindcss-intellisense/issues/151#issuecomment-684684682))
+
 ## Build
 
 To create a production build just run:
@@ -73,3 +75,4 @@ and join the room without manually sharing the invitation token
 - When a type spacebar the page scrolls down because the editor is on readOnly mode and the editor is not "focusable"
 - Do we need to skip comments?
 - How to automaticly scroll the eidtor if the content the user is typing is after the middle of the edit viewport
+- Figure out which monaco features we need to make di build file smaller
