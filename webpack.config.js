@@ -42,7 +42,7 @@ module.exports = {
 					{
 						loader: MiniCssExtractPlugin.loader,
 						options: {
-							publicPath: '../' // required to load monaco .ttf file
+							publicPath: '../' // required to reference assets on build folder
 						}
 					},
 					'css-loader',
@@ -62,7 +62,7 @@ module.exports = {
 					{
 						loader: 'file-loader',
 						options: {
-							name: './build/[contenthash].[ext]', // output .fft assets on build folder
+							name: './build/assets/[contenthash].[ext]', // output .fft assets on build folder
 						}
 					},
 				]
@@ -74,8 +74,7 @@ module.exports = {
 			filename: '[name].css'
 		}),
 		new MonacoWebpackPlugin({
-			filename: "./build/[name].worker.js", // output workers on build folder
-			//publicPath: "./build/"
+			filename: "./build/workers/[name].worker.js", // output workers on build folder
 		}),
 	],
 	devtool: prod ? false : 'source-map',
