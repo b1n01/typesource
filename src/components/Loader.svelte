@@ -1,0 +1,1 @@
+<img src="images/loader.svg" alt="Loader icon" class="animate-spin w-4 m-auto mt-4">
