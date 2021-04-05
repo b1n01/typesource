@@ -1,8 +1,11 @@
 <script>
 	  import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
     import { tick } from 'svelte';
-    let editor
+    import { fileContent, selectedFile } from '../stores.js';
+
+    let editor = null
     const bgColor = '#283548'
+    const languages = monaco.languages.getLanguages()
 
     monaco.editor.defineTheme('typesource-theme', {
         base: 'vs-dark',
@@ -20,31 +23,9 @@
 
     tick().then(() => {
       editor = monaco.editor.create(document.getElementById('monaco'), {
-            value: `((window) => {
-  const core = window.Deno.core;
-  const { Listener, Conn } = window.__bootstrap.net;
-
-  function opConnectTls(
-    args,
-  ) {
-    return core.jsonOpAsync("op_connect_tls", args);
-  }
-
-  function opAcceptTLS(rid) {
-    return core.jsonOpAsync("op_accept_tls", { rid });
-  }
-
-  function opListenTls(args) {
-    return core.jsonOpSync("op_listen_tls", args);
-  }
-
-  function opStartTls(args) {
-    return core.jsonOpAsync("op_start_tls", args);
-  }}`,
             // see https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.istandaloneeditorconstructionoptions.html
             readOnly: true,
             automaticLayout: true, // automaticaaly resize
-            language: 'javascript',
             fontFamily: 'Fira Code',
 	          fontSize: 14,
             theme: 'typesource-theme',
@@ -93,6 +74,24 @@
       monaco.editor.remeasureFonts()
     }, 1000)
 
+    // Update edito value
+    $: { if (editor) editor.getModel().setValue($fileContent)}
+    
+    // Update editor languages
+    $: { 
+      if (editor && $selectedFile) {
+        let extension = $selectedFile.name.split('.').pop();
+        let language = languages.find((lang) => lang.extensions.includes('.' + extension))
+        if(language) {
+            console.log('Found new language', language.id)
+            monaco.editor.setModelLanguage(editor.getModel(), language.id)
+        } else {
+            console.log('No language find for file', $selectedFile.name)
+            monaco.editor.setModelLanguage(editor.getModel(), 'plaintext')
+        }
+      }
+    }
+   
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">
