@@ -1,6 +1,8 @@
 const bgColor = '#283548'
+const customTheme = 'typesource-theme' // the name of the custom theme
 
 export default {
+    customTheme: customTheme, 
     theme: {
         base: 'vs-dark',
         inherit: true,
@@ -17,6 +19,7 @@ export default {
     editor: {
         // see https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.istandaloneeditorconstructionoptions.html
         readOnly: true,
+        theme: customTheme,
         automaticLayout: true, // automaticaly resize
         fontFamily: 'Fira Code', // default font family
         fontSize: 14, // sefault font size
