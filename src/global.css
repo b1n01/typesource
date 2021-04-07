@@ -1,2 +1,13 @@
+/* Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+
+/* Monaco customization */
+.grayedOut {
+    color: gray !important;
+    font-weight: 400 !important;
+}
+.cursor {
+    background: rgb(211, 76, 23);
+    width: 2px !important;
+}
