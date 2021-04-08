@@ -1,7 +1,7 @@
 <script>
 	  import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import { tick } from 'svelte'
-    import { fileContent, selectedFile } from '../stores.js'
+    import { availableStates, fileContent, selectedFile, state, sessionStar, language as fileLanguage } from '../stores.js'
     import monacoConfig from '../monaco.config'
 
     let editor = null // the editor
@@ -45,6 +45,7 @@
       const language = languages.find(lang => lang.extensions.includes('.' + extension))
       const languageId = language ? language.id : 'plaintext'
       monaco.editor.setModelLanguage(editor.getModel(), languageId)
+      fileLanguage.set(languageId)
     }
 
     // Update editor value with fileContent
@@ -112,6 +113,17 @@
 
       // Catch user keypress and check if the cursor should move
       handleTyping()
+
+      editor.onDidFocusEditorText(() => {
+        if($selectedFile) {
+          state.set(availableStates.active)
+          sessionStar.set(Date.now())
+        }
+      })
+
+      editor.onDidBlurEditorText(() => {
+        state.set(availableStates.stopped)
+      })
     })
 
     // Update editor value when fileContent changes
