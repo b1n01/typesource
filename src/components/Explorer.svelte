@@ -1,5 +1,5 @@
 <script>
-    import { fileContent, selectedFile } from '../stores.js'
+    import { fileContent, selectedFile, state, availableStates } from '../stores.js'
     import Loader from './Loader.svelte'
 
     const searchRepoEndpoint = 'https://api.github.com/search/repositories?q='
@@ -68,6 +68,7 @@
         .then(data => {
           fileContent.set(data)
           selectedFile.set(file)
+          state.set(availableStates.stopped)
         }).then(toggleLoader)
         .catch(e => console.error(e))
     }

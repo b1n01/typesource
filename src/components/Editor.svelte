@@ -1,7 +1,7 @@
 <script>
 	  import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import { tick } from 'svelte'
-    import { availableStates, fileContent, selectedFile, state, sessionStar, language as fileLanguage } from '../stores.js'
+    import { availableStates, fileContent, selectedFile, typedChars, state, language as fileLanguage } from '../stores.js'
     import monacoConfig from '../monaco.config'
 
     let editor = null // the editor
@@ -78,6 +78,7 @@
           position.column++
           editor.setPosition(position)
           updateDecoration()
+          typedChars.update(n => n + 1)
         }
 
         // If we are at the end of the line and the Enter is pressed
@@ -114,15 +115,14 @@
       // Catch user keypress and check if the cursor should move
       handleTyping()
 
+      // Set active state when the editor gets focus
       editor.onDidFocusEditorText(() => {
-        if($selectedFile) {
-          state.set(availableStates.active)
-          sessionStar.set(Date.now())
-        }
+        state.set(availableStates.active)
       })
 
+      // Set state as paused on editor blur
       editor.onDidBlurEditorText(() => {
-        state.set(availableStates.stopped)
+        state.set(availableStates.pause)
       })
     })
 
