@@ -1,5 +1,10 @@
 import { writable } from 'svelte/store'
 
+// Timer
+export const elapsed = writable(0) // how many seconds since timer start
+export const interval = writable(null) // id of the current timer interval
+export const timer = writable('00:00') // timer in the format `00:00`
+
 export const availableStates = {
     stopped: 'stopped', // the focus is not on the editor
     active: 'active', // the user is typing
