@@ -2,7 +2,7 @@
 	import Nav from './Nav.svelte'
 	import Editor from './Editor.svelte'
 	import Explorer from './Explorer.svelte'
-	// import Match from './Match.svelte'
+	import Debug from './Debug.svelte'
 </script>
 
 <Nav />
@@ -16,4 +16,4 @@
 		</section>
 	</section>
 </section>
-</section>
+<Debug />
