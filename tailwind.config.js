@@ -14,6 +14,9 @@ module.exports = {
         highlight: "#3C4A5D",
         border: "#49596E",
       },
+      minWidth: {
+        lg: "1024px",
+      },
     },
   },
   variants: {
