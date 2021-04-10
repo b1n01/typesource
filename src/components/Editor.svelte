@@ -1,7 +1,8 @@
 <script>
 	  import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
     import { tick } from 'svelte'
-    import { availableStates, fileContent, selectedFile, typedChars, state, language as fileLanguage } from '../stores.js'
+    import { fileContent, selectedFile, typedChars, language as fileLanguage } from '../stores.js'
+    import { state } from '../states'
     import monacoConfig from '../monaco.config'
 
     let editor = null // the editor
@@ -117,12 +118,12 @@
 
       // Set active state when the editor gets focus
       editor.onDidFocusEditorText(() => {
-        state.set(availableStates.active)
+        state.send('START')
       })
 
       // Set state as paused on editor blur
       editor.onDidBlurEditorText(() => {
-        state.set(availableStates.pause)
+        state.send('PAUSE')
       })
     })
 
