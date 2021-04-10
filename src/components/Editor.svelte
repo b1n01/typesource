@@ -92,9 +92,8 @@
 
   // On focus set state active
   const handleFocus = () => {
-    editor.onDidFocusEditorText(() => {
-      //state.send('START')
-    });
+    // editor.onDidFocusEditorText(() => {
+    // });
   };
 
   // On blur set state paused

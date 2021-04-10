@@ -1,5 +1,6 @@
 const bgColor = "#283548";
 const customTheme = "typesource-theme"; // the name of the custom theme
+import instruction from "!raw-loader!./instruction.md";
 
 export default {
   customTheme: customTheme,
@@ -18,6 +19,8 @@ export default {
   },
   editor: {
     // see https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.istandaloneeditorconstructionoptions.html
+    value: instruction,
+    language: "markdown",
     readOnly: true,
     theme: customTheme,
     automaticLayout: true, // automaticaly resize
