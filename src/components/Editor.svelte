@@ -4,8 +4,9 @@
   import {
     fileContent,
     selectedFile,
-    typedChars,
+    correctChars,
     language as fileLanguage,
+    typedChars,
   } from "../stores.js";
   import { state } from "../states";
   import monacoConfig from "../monaco.config";
@@ -119,9 +120,12 @@
         position.column++;
         editor.setPosition(position);
         updateDecoration();
-        typedChars.update((n) => n + 1);
+        correctChars.update((n) => n + 1);
         state.send("START");
       }
+
+      // Update typed characters
+      if ($state.value === "active") typedChars.update((n) => n + 1);
 
       // If we are at the end of the line and the Enter is pressed
       // than go on next line

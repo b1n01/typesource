@@ -1,5 +1,10 @@
 <script>
-  import { fileContent, selectedFile, typedChars } from "../stores.js";
+  import {
+    fileContent,
+    selectedFile,
+    correctChars,
+    typedChars,
+  } from "../stores.js";
   import { state } from "../states";
   import Loader from "./Loader.svelte";
 
@@ -74,7 +79,8 @@
         fileContent.set(data);
         selectedFile.set(file);
         state.send("STOP");
-        typedChars.set(0);
+        correctChars.set(0);
+        typedChars.set([]);
       })
       .then(toggleLoader)
       .catch((e) => console.error(e));
@@ -100,7 +106,7 @@
 
   <!-- Seach input -->
   <div class="flex bg-highlight border border-border rounded mt-4">
-    <img src="images/search.svg" alt="Search icon" class="ml-2" />
+    <img src="images/search.svg" alt="Search icon" class="ml-2 w-4" />
     <input
       bind:value={search}
       on:input={debounce(handleSearch)}

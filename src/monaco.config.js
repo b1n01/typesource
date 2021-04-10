@@ -50,8 +50,8 @@ export default {
     snippetSuggestions: "none", // hide snippets
     tabCompletion: false, // disable tab completion
     wordBasedSuggestions: false, // disable suggestions based on content words
-    wordWrap: "wordWrapColumn",
-    parameterHints: { enabled: false },
+    wordWrap: "on", // wrap words
+    parameterHints: { enabled: false }, // disable parameter hints
     lightbulb: { enabled: false }, // disable lightbulb suggestions
     hover: { enabled: false }, // hide hover tips
   },
