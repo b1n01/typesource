@@ -1,5 +1,5 @@
 <script>
-    import { fileContent, selectedFile } from '../stores.js'
+    import { fileContent, selectedFile, typedChars } from '../stores.js'
     import { state } from '../states'
     import Loader from './Loader.svelte'
 
@@ -70,6 +70,7 @@
           fileContent.set(data)
           selectedFile.set(file)
           state.send('STOP')
+          typedChars.set(0)
         }).then(toggleLoader)
         .catch(e => console.error(e))
     }
