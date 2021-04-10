@@ -55,10 +55,29 @@
       resetPosition()
     }
 
-    // Only let cursor position to be changed from api
+    // Only let cursor position to be updated from `api` or by human if the 
+    // state is `inactive` or `stopped`
     const preventPositionChange = () => {
       editor.onDidChangeCursorPosition(e => {
-        if(e.source !== 'api') editor.setPosition(position)
+        if(['inactive', 'stopped'].includes($state.value) || e.source === 'api') {
+          position = editor.getPosition() 
+        } else {
+          editor.setPosition(position)
+        }
+      })
+    }
+
+    // On focus set state active 
+    const handleFocus = () => {
+      editor.onDidFocusEditorText(() => {
+        //state.send('START')
+      })
+    }
+
+    // On blur set state paused
+    const handleBlur = () => {
+      editor.onDidBlurEditorText(() => {
+        state.send('PAUSE')
       })
     }
 
@@ -80,6 +99,7 @@
           editor.setPosition(position)
           updateDecoration()
           typedChars.update(n => n + 1)
+          state.send('START')
         }
 
         // If we are at the end of the line and the Enter is pressed
@@ -117,14 +137,10 @@
       handleTyping()
 
       // Set active state when the editor gets focus
-      editor.onDidFocusEditorText(() => {
-        state.send('START')
-      })
+      handleFocus()
 
       // Set state as paused on editor blur
-      editor.onDidBlurEditorText(() => {
-        state.send('PAUSE')
-      })
+      handleBlur()
     })
 
     // Update editor value when fileContent changes

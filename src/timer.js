@@ -20,17 +20,18 @@ const updateTimer = () => {
 // when the state changes.
 export const init = () => {
     state.subscribe(state => {
-        switch (state.value) {
-            case 'active':
-                start()
-            break;
-            case 'paused':
-                pause()
+        if(state.changed) {
+            switch (state.value) {
+                case 'active':
+                    start()
                 break;
-            case 'stop':
-            default:
-                stop()
-            break;
+                case 'paused':
+                    pause()
+                    break;
+                case 'stopped':
+                    stop()
+                break;
+            }
         }
     })
 }
