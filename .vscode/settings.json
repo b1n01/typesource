@@ -4,6 +4,7 @@
   "editor.detectIndentation": false,
   "editor.formatOnPaste": true,
   "editor.tabSize": 2,
+  "editor.fontSize": 16,
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
   }
