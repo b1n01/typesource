@@ -2,31 +2,31 @@
 // see https://github.com/davidkpiano/xstate/tree/master/packages/xstate-svelte
 // see https://xstate.js.org/viz/
 
-import { createMachine, interpret } from 'xstate';
+import { createMachine, interpret } from "xstate";
 
 const stateMachine = createMachine({
-  id: 'editor-state',
-  initial: 'inactive',
+  id: "editor-state",
+  initial: "inactive",
   states: {
     inactive: {
-        on: { START: 'active' },
+      on: { START: "active" },
     },
     stopped: {
-        on: { START: 'active' },
+      on: { START: "active" },
     },
     active: {
-        on: { 
-            PAUSE: 'paused',
-            STOP: 'stopped',
-        },
+      on: {
+        PAUSE: "paused",
+        STOP: "stopped",
+      },
     },
     paused: {
-        on: { 
-            STOP: 'stopped',
-            START: 'active',
-        },
-    }
-  }
-})
+      on: {
+        STOP: "stopped",
+        START: "active",
+      },
+    },
+  },
+});
 
-export const state = interpret(stateMachine).start()
+export const state = interpret(stateMachine).start();

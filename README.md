@@ -4,7 +4,8 @@ Practice touch typing on source code
 
 ## Up and running
 
-### Svelte 
+### Svelte
+
 This project is created with the [webpack Svelte template](https://github.com/sveltejs/template-webpack), to spin it up install the dependencies:
 
 ```bash
@@ -46,9 +47,9 @@ npm run build
 - The user can select
 - The user can select from which line the typing expiriece will start
 - Three way to select where the text the user has to type ends:
-    - The user can select a line where the range ends
-    - There is a "digit count" with a (reasonable default) that sets the range end
-    - There is a 60 seconds timer that let the user type from the range start until the timer stops
+  - The user can select a line where the range ends
+  - There is a "digit count" with a (reasonable default) that sets the range end
+  - There is a 60 seconds timer that let the user type from the range start until the timer stops
 - The user can create and share a room via a custom url path
 - The user who accepts the invitation will join the shared editor and cursors position
 - All users in a room can propose file from a repo
@@ -63,7 +64,7 @@ npm run build
 
 - Match making with strangers
 - The user can create a room on a selected file, other player can search "active" room by languges
-and join the room without manually sharing the invitation token
+  and join the room without manually sharing the invitation token
 
 ### Todo
 

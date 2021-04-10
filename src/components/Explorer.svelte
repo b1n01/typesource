@@ -1,179 +1,198 @@
 <script>
-    import { fileContent, selectedFile, typedChars } from '../stores.js'
-    import { state } from '../states'
-    import Loader from './Loader.svelte'
+  import { fileContent, selectedFile, typedChars } from "../stores.js";
+  import { state } from "../states";
+  import Loader from "./Loader.svelte";
 
-    const searchRepoEndpoint = 'https://api.github.com/search/repositories?q='
-    let search = '' // content of the search input
-    let repos = [] // list of repos 
-    let files = [] // list of files/folders in the selected repo
-    let repoBaseUrl = '' // base path of the selected repo
-    let repoCurrentUrl = '' // path of the repos's selected folder
-    let selectedRepo = null // the selected repo
-    let loading = false // whether the widget il loading something
+  const searchRepoEndpoint = "https://api.github.com/search/repositories?q=";
+  let search = ""; // content of the search input
+  let repos = []; // list of repos
+  let files = []; // list of files/folders in the selected repo
+  let repoBaseUrl = ""; // base path of the selected repo
+  let repoCurrentUrl = ""; // path of the repos's selected folder
+  let selectedRepo = null; // the selected repo
+  let loading = false; // whether the widget il loading something
 
-    const toggleLoader = () => loading = !loading
-    const resetSearch = () => { files = []; repos = []; selectedRepo = null }
+  const toggleLoader = () => (loading = !loading);
+  const resetSearch = () => {
+    files = [];
+    repos = [];
+    selectedRepo = null;
+  };
 
-    // Search repositories
-    const handleSearch = () => {
-      resetSearch()
-      toggleLoader()
+  // Search repositories
+  const handleSearch = () => {
+    resetSearch();
+    toggleLoader();
 
-		  fetch(searchRepoEndpoint + search)
-        .then(res => res.json())
-        .then(data => repos = data.items)
-        .then(toggleLoader)
-        .catch(e => console.error(e))
-	  }
+    fetch(searchRepoEndpoint + search)
+      .then((res) => res.json())
+      .then((data) => (repos = data.items))
+      .then(toggleLoader)
+      .catch((e) => console.error(e));
+  };
 
-    // Select a repo
-    const selectRepo = (repo) => {
-      toggleLoader()
-      selectedRepo = repo
-      repoBaseUrl = repo.contents_url.replace('/{+path}', '') // replace `{+path}` placeholder
-      repoCurrentUrl = repoBaseUrl
+  // Select a repo
+  const selectRepo = (repo) => {
+    toggleLoader();
+    selectedRepo = repo;
+    repoBaseUrl = repo.contents_url.replace("/{+path}", ""); // replace `{+path}` placeholder
+    repoCurrentUrl = repoBaseUrl;
 
-      fetch(repoBaseUrl)
-        .then(res => res.json())
-        .then(data => files = data)
-        .then(toggleLoader)
-        .catch(e => console.error(e))
-    }
+    fetch(repoBaseUrl)
+      .then((res) => res.json())
+      .then((data) => (files = data))
+      .then(toggleLoader)
+      .catch((e) => console.error(e));
+  };
 
-    // Change folder (it takes the path of the folder: `/` or `/folder/name`)
-    const chageFolder = (path) => {
-      toggleLoader()
-      repoCurrentUrl = (repoBaseUrl + path).replace(/\/+$/, "") // remove trailing slashes
+  // Change folder (it takes the path of the folder: `/` or `/folder/name`)
+  const chageFolder = (path) => {
+    toggleLoader();
+    repoCurrentUrl = (repoBaseUrl + path).replace(/\/+$/, ""); // remove trailing slashes
 
-      fetch(repoCurrentUrl)
-        .then(res => res.json())
-        .then(data => files = data)
-        .then(toggleLoader)
-        .catch(e => console.error(e))
-    }
+    fetch(repoCurrentUrl)
+      .then((res) => res.json())
+      .then((data) => (files = data))
+      .then(toggleLoader)
+      .catch((e) => console.error(e));
+  };
 
-    // Navigate to parent folder
-    const goToParentFolder = () => {
-      const path = getRepoPath()
-      repoCurrentUrl = path.substring(0, path.lastIndexOf("/"))
-      chageFolder(repoCurrentUrl)
-    }
+  // Navigate to parent folder
+  const goToParentFolder = () => {
+    const path = getRepoPath();
+    repoCurrentUrl = path.substring(0, path.lastIndexOf("/"));
+    chageFolder(repoCurrentUrl);
+  };
 
-    // Select a file
-    const selectFile = (file) => {
-      toggleLoader()
-      
-      fetch(file.download_url)
-        .then(res => res.text())
-        .then(data => {
-          fileContent.set(data)
-          selectedFile.set(file)
-          state.send('STOP')
-          typedChars.set(0)
-        }).then(toggleLoader)
-        .catch(e => console.error(e))
-    }
+  // Select a file
+  const selectFile = (file) => {
+    toggleLoader();
 
-    // Get repo url path
-    const getRepoPath = () => repoCurrentUrl.replace(repoBaseUrl, '')
+    fetch(file.download_url)
+      .then((res) => res.text())
+      .then((data) => {
+        fileContent.set(data);
+        selectedFile.set(file);
+        state.send("STOP");
+        typedChars.set(0);
+      })
+      .then(toggleLoader)
+      .catch((e) => console.error(e));
+  };
 
-    // Debounce function (https://www.freecodecamp.org/news/javascript-debounce-example/)
-    const debounce = (func, timeout = 350) => {
-      let timer
-      return (...args) => {
-        clearTimeout(timer)
-        timer = setTimeout(() => { func.apply(this, args); }, timeout);
-      }
-    }
+  // Get repo url path
+  const getRepoPath = () => repoCurrentUrl.replace(repoBaseUrl, "");
+
+  // Debounce function (https://www.freecodecamp.org/news/javascript-debounce-example/)
+  const debounce = (func, timeout = 350) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  };
 </script>
 
 <main class="p-4 rounded bg-float text-white flex flex-col">
-    <h1 class="font-bold">Search file on github repositories</h1>
+  <h1 class="font-bold">Search file on github repositories</h1>
 
-    <!-- Seach input -->
-    <div class="flex bg-highlight border border-border rounded mt-4">
-        <img src="images/search.svg" alt="Search icon" class="ml-2">
-        <input bind:value={search} on:input={debounce(handleSearch)} type="text" placeholder="Search repositories" class="p-2 bg-transparent outline-none w-full">
-    </div>
+  <!-- Seach input -->
+  <div class="flex bg-highlight border border-border rounded mt-4">
+    <img src="images/search.svg" alt="Search icon" class="ml-2" />
+    <input
+      bind:value={search}
+      on:input={debounce(handleSearch)}
+      type="text"
+      placeholder="Search repositories"
+      class="p-2 bg-transparent outline-none w-full"
+    />
+  </div>
 
-    {#if loading }
-      <span class="h-32 flex justify-center items-center">
-        <Loader />
-      </span>
-    {:else}
-      {#if selectedRepo }
-        <!-- Breadcrumb -->
-        <div class="font-bold mt-4 ml-2">
-            <span 
-              class="cursor-pointer hover:underline" 
-              on:click={() => chageFolder('/')}
+  {#if loading}
+    <span class="h-32 flex justify-center items-center">
+      <Loader />
+    </span>
+  {:else}
+    {#if selectedRepo}
+      <!-- Breadcrumb -->
+      <div class="font-bold mt-4 ml-2">
+        <span
+          class="cursor-pointer hover:underline"
+          on:click={() => chageFolder("/")}
+        >
+          {selectedRepo.name}
+        </span>
+        {#each getRepoPath().split("/") as token, index}
+          <span
+            class="cursor-pointer hover:underline"
+            on:click={() => {
+              // build the new path from the selected breadcrumb token
+              const path = getRepoPath()
+                .split("/")
+                .slice(0, index + 1)
+                .join("/");
+              chageFolder(path);
+            }}
+          >
+            {token}
+          </span>
+          <span> / </span>
+        {/each}
+      </div>
+      <hr class="border-highlight mt-4" />
+    {/if}
+
+    {#if repos.length && !selectedRepo}
+      <!-- Repos list -->
+      <ul class="mt-4 max-h-64 overflow-y-auto">
+        {#each repos as repo}
+          <li>
+            <div
+              on:click={() => selectRepo(repo)}
+              class="flex p-2 hover:bg-highlight rounded cursor-pointer"
             >
-              {selectedRepo.name}
-            </span>
-            {#each getRepoPath().split('/') as token, index}
-                <span 
-                  class="cursor-pointer hover:underline" 
-                  on:click={() => {
-                    // build the new path from the selected breadcrumb token
-                    const path = getRepoPath().split('/').slice(0, index + 1).join('/')
-                    chageFolder(path)
-                }}>
-                  {token}
-                </span>
-                <span> / </span>
-            {/each}
-        </div>
-        <hr class="border-highlight mt-4">
-      {/if}
+              {repo.full_name}
+            </div>
+          </li>
+          <li />{/each}
+      </ul>
+    {/if}
 
-      {#if repos.length && !selectedRepo }
-        <!-- Repos list -->
-        <ul class="mt-4 max-h-64 overflow-y-auto">
-            {#each repos as repo}
-                <li>
-                    <div on:click={() => selectRepo(repo)} class="flex p-2 hover:bg-highlight rounded cursor-pointer">
-                        {repo.full_name}
-                    </div>
-                <li>
-            {/each}
-        </ul>
-      {/if}
+    {#if files.length}
+      <!-- File list -->
+      <ul class="mt-4 max-h-64 overflow-y-auto">
+        {#if repoCurrentUrl !== repoBaseUrl}
+          <li on:click={goToParentFolder}>
+            <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
+              ☝
+              <span class="pl-4">Back to parent folder</span>
+            </div>
+          </li>
+        {/if}
+        {#each files as file}
+          {#if file.type == "file"}
+            <li on:click={() => selectFile(file)}>
+              <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
+                📄
+                <span class="pl-4">{file.name}</span>
+              </div>
+            </li>
+          {:else}
+            <li on:click={() => chageFolder("/" + file.path)}>
+              <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
+                📁
+                <span class="pl-4">{file.name}</span>
+              </div>
+            </li>
+          {/if}
+        {/each}
+      </ul>
 
-      {#if files.length }
-        <!-- File list -->
-        <ul class="mt-4 max-h-64 overflow-y-auto">
-            {#if repoCurrentUrl !== repoBaseUrl }
-                <li on:click={goToParentFolder}>
-                    <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
-                      ☝
-                      <span class="pl-4">Back to parent folder</span>
-                    </div>
-                </li>
-            {/if }
-            {#each files as file}
-                {#if file.type == 'file' }
-                    <li on:click={() => selectFile(file)}>
-                        <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
-														📄
-                            <span class="pl-4">{file.name}</span>
-                        </div>
-                    </li>
-                {:else}
-                    <li on:click={() => chageFolder('/' + file.path)}>
-                        <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
-														📁
-                            <span class="pl-4">{file.name}</span>
-                        </div>
-                    </li>
-                {/if}
-            {/each}
-        </ul>
-
-        <!-- {#if $selectedFile}
+      <!-- {#if $selectedFile}
           <button class="bg-highlight border-border border py-2 px-4 rounded focus:outline-none hover:bg-border self-end mt-4">Select File</button>
         {/if} -->
-      {/if}
-
     {/if}
+  {/if}
 </main>
