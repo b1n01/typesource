@@ -11,7 +11,7 @@
   } from "../stores";
   import { state } from "../states";
 
-  let show = true;
+  let show = false;
   const toggle = () => (show = !show);
 </script>
 
