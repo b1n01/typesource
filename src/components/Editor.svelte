@@ -172,25 +172,7 @@
 
   // Update editor language when selectedFile changes
   $: editor && $selectedFile && updateLanguage();
-
-  // Remove this
-  const preview = () => {
-    fetch(
-      "https://raw.githubusercontent.com/denoland/deno/main/runtime/examples/hello_runtime.js"
-    )
-      .then((res) => res.text())
-      .then((data) => {
-        fileContent.set(data);
-        selectedFile.set({ name: "hello_runtime.js" });
-        tick().then(updateDecoration);
-      });
-  };
 </script>
-
-<!-- Remove this -->
-<!-- <button on:click={preview} class="bg-highlight text-white border-border border py-2 px-4 rounded focus:outline-none hover:bg-border mb-4">
-  Load Preview
-</button> -->
 
 <div class="autoHeight p-8 rounded bg-float">
   <div class="h-full w-full" id="monaco" />
