@@ -6,9 +6,12 @@
     elapsed,
     correctChars,
     typedChars,
+    wpm,
+    accuracy,
   } from "../stores";
   import { state } from "../states";
-  let show = false;
+
+  let show = true;
   const toggle = () => (show = !show);
 </script>
 
@@ -24,12 +27,8 @@
     <p>timer: {$timer}</p>
     <p>typed chars: {$typedChars.length}</p>
     <p>correct chars: {$correctChars}</p>
-    <p>
-      accuracy: {$typedChars.length
-        ? Math.round(($correctChars / $typedChars.length) * 100) + "%"
-        : "-"}
-    </p>
-    <p>wpm: {$elapsed ? Math.floor(($correctChars / 5 / $elapsed) * 60) : 0}</p>
+    <p>accuracy: {$accuracy}</p>
+    <p>wpm: {$wpm}</p>
   {:else}
     <p class="cursor-pointer" on:click={toggle}>
       Debug<span class="ml-4">⬆️</span>
