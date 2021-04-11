@@ -148,9 +148,6 @@
     // Hide 'cannot edit in read-only editor' tooltip
     hideReadOnlyTooltip();
 
-    // Gray out text not already typed
-    updateDecoration();
-
     // Reload custom font sizing when the font is fetched
     remeasureFonts();
 
