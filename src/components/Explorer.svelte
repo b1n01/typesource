@@ -27,8 +27,9 @@
   // Search repositories
   const handleSearch = () => {
     resetSearch();
-    toggleLoader();
+    if (!search) return;
 
+    toggleLoader();
     fetch(searchRepoEndpoint + search)
       .then((res) => res.json())
       .then((data) => (repos = data.items))
