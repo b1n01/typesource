@@ -7,6 +7,7 @@
   } from "../stores.js";
   import { state } from "../states";
   import Loader from "./Loader.svelte";
+  import Input from "./Input.svelte";
 
   const searchRepoEndpoint = "https://api.github.com/search/repositories?q=";
   let search = ""; // content of the search input
@@ -105,17 +106,19 @@
 <main class="p-4 rounded bg-float text-white flex flex-col">
   <h1 class="font-bold">Search file on github repositories</h1>
 
-  <!-- Seach input -->
-  <div class="flex bg-highlight border border-border rounded mt-4">
-    <img src="images/search.svg" alt="Search icon" class="ml-2 w-4" />
-    <input
-      bind:value={search}
-      on:input={debounce(handleSearch)}
-      type="text"
-      placeholder="Search repositories"
-      class="p-2 bg-transparent outline-none w-full"
+  <Input
+    bind:value={search}
+    onInput={debounce(handleSearch)}
+    placeholder="Seach repositories"
+    class="mt-4"
+  >
+    <img
+      slot="icon"
+      src="images/search.svg"
+      alt="Search icon"
+      class="ml-2 w-4"
     />
-  </div>
+  </Input>
 
   {#if loading}
     <span class="h-32 flex justify-center items-center">
@@ -196,10 +199,6 @@
           {/if}
         {/each}
       </ul>
-
-      <!-- {#if $selectedFile}
-          <button class="bg-highlight border-border border py-2 px-4 rounded focus:outline-none hover:bg-border self-end mt-4">Select File</button>
-        {/if} -->
     {/if}
   {/if}
 </main>
