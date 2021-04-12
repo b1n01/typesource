@@ -8,8 +8,8 @@ Welcome to typesource, place your cursor on this text and start typing the words
 
 # Debug
 
-Open the debug box on the bottom right ↙️ to see information about your typing session.
+Open the debug box on the bottom right to see information about your typing session.
 
 # Github source code
 
-Use the box on the right ➡️ to search for file on Github repos, pick a file to start practicing on it.
+Use the box on the right to search for file on Github repos, pick a file to start practicing on it.
