@@ -12,10 +12,10 @@
     <Editor />
   </div>
   <div class="w-1/3 m-4 ml-2 xl:m-8 xl:ml-4 2xl:w-1/4">
-    <div>
+    <div class="mb-4 xl:mb-8">
       <InfoBox />
     </div>
-    <div>
+    <div class="mb-4 xl:mb-8">
       <Explorer />
     </div>
   </div>
