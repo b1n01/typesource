@@ -1,10 +1,5 @@
 <script>
-  import {
-    fileContent,
-    selectedFile,
-    correctChars,
-    typedChars,
-  } from "../stores.js";
+  import { fileContent, fileUrl, correctChars, typedChars } from "../stores.js";
   import { state } from "../states";
   import Loader from "./Loader.svelte";
   import Input from "./Input.svelte";
@@ -79,7 +74,7 @@
       .then((res) => res.text())
       .then((data) => {
         fileContent.set(data);
-        selectedFile.set(file);
+        fileUrl.set(file.download_url);
         state.send("STOP");
         correctChars.set(0);
         typedChars.set([]);

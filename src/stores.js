@@ -2,7 +2,7 @@ import { writable } from "svelte/store";
 
 // File
 export const fileContent = writable(""); // the content of the selected file
-export const selectedFile = writable(null); // the selected file
+export const fileUrl = writable(""); // the url of the selected file
 export const language = writable(null); // the language of the selected file
 export const typedChars = writable([]); // all the characters typed in this session
 export const correctChars = writable(0); // how many correct characters has been typed

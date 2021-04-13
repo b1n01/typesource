@@ -3,7 +3,7 @@
   import { tick } from "svelte";
   import {
     fileContent,
-    selectedFile,
+    fileUrl,
     correctChars,
     language as fileLanguage,
     typedChars,
@@ -57,9 +57,9 @@
     setTimeout(monaco.editor.remeasureFonts, delay);
   };
 
-  // Update editor language when selectedFile changes
+  // Update editor language when fileUrl changes
   const updateLanguage = () => {
-    const extension = $selectedFile.name.split(".").pop();
+    const extension = $fileUrl.split(".").pop();
     const languages = monaco.languages.getLanguages();
     const language = languages.find((lang) =>
       lang.extensions.includes("." + extension)
@@ -167,8 +167,8 @@
   // Update editor value when fileContent changes
   $: editor && $fileContent && updateContent();
 
-  // Update editor language when selectedFile changes
-  $: editor && $selectedFile && updateLanguage();
+  // Update editor language when fileUrl changes
+  $: editor && $fileUrl && updateLanguage();
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">

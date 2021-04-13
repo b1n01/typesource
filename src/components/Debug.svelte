@@ -1,6 +1,6 @@
 <script>
   import {
-    selectedFile,
+    fileUrl,
     language,
     timer,
     elapsed,
@@ -20,7 +20,7 @@
     <p class="flex justify-between cursor-pointer pb-2" on:click={toggle}>
       Debug<span>❌</span>
     </p>
-    <p>file: {$selectedFile?.name || ""}</p>
+    <p>file: {$fileUrl ? $fileUrl.split("/").pop() : ""}</p>
     <p>lang: {$language || ""}</p>
     <p>state: {$state.value}</p>
     <p>elapsed: {$elapsed}</p>
