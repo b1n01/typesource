@@ -2,6 +2,7 @@
   import Nav from "./Nav.svelte";
   import Editor from "./Editor.svelte";
   import Explorer from "./Explorer.svelte";
+  import Match from "./Match.svelte";
   import Debug from "./Debug.svelte";
   import InfoBox from "./InfoBox.svelte";
 </script>
@@ -17,6 +18,9 @@
     </div>
     <div class="mb-4 xl:mb-8">
       <Explorer />
+    </div>
+    <div>
+      <Match />
     </div>
   </div>
 </div>
