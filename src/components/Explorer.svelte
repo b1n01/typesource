@@ -103,7 +103,7 @@
 
   <Input
     bind:value={search}
-    onInput={debounce(handleSearch)}
+    on:input={debounce(handleSearch)}
     placeholder="Seach repositories"
     class="mt-4"
   >

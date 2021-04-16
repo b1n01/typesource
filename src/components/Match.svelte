@@ -83,17 +83,17 @@
   <h1 class="font-bold">Match</h1>
 
   {#if !roomReady}
-    <Button label="Create a room" class="mt-4" onClick={createRoom} />
+    <Button label="Create a room" class="mt-4" on:click={createRoom} />
   {:else}
     <div class="flex mt-4">
       <Input value={url.href} readonly />
       <Button label="Copy" class="ml-4" />
     </div>
-    <Button label="Leave room" class="mt-4" onClick={leaveRoom} />
+    <Button label="Leave room" class="mt-4" on:click={leaveRoom} />
   {/if}
   <Button
     label="Log map"
     class="mt-4"
-    onClick={() => console.log(map.toJSON())}
+    on:click={() => console.log(map.toJSON())}
   />
 </div>

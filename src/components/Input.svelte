@@ -1,6 +1,5 @@
 <script>
   export let value = ""; // input value
-  export let onInput = () => {}; // called on change
   export let placeholder = ""; // the placeholder
   export let readonly = false; // wheter the input is readonly
   let propClass = "";
@@ -11,7 +10,7 @@
   <slot name="icon" />
   <input
     bind:value
-    on:input={onInput}
+    on:input
     {placeholder}
     {readonly}
     type="text"
