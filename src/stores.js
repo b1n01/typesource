@@ -15,3 +15,6 @@ export const timer = writable("00:00"); // timer in the format `00:00`
 // Metrics
 export const wpm = writable(null); // words per minutes
 export const accuracy = writable(null); // accuracy percentages (correct chars / typed chars
+
+// Players cursors
+export const position = writable({ lineNumber: 1, column: 1 }); // player cursor position

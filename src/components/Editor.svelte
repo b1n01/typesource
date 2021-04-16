@@ -7,16 +7,16 @@
     correctChars,
     language as fileLanguage,
     typedChars,
+    position,
   } from "../stores.js";
   import { state } from "../states";
   import monacoConfig from "../monaco.config";
 
   let editor = null; // the editor
   let decorations = []; // decoration to gray out the content not already
-  let position = { lineNumber: 1, column: 1 }; // initial position of the cusror
 
   // Reset position to 1, 1
-  const resetPosition = () => (position = { lineNumber: 1, column: 1 });
+  const resetPosition = () => ($position = { lineNumber: 1, column: 1 });
 
   // Create the editor with custom theme
   const createEditor = () => {
@@ -33,8 +33,8 @@
       {
         options: { inlineClassName: "grayedOut" },
         range: new monaco.Range(
-          position.lineNumber,
-          position.column,
+          $position.lineNumber,
+          $position.column,
           10000,
           10000
         ),
@@ -83,9 +83,9 @@
         ["inactive", "stopped"].includes($state.value) ||
         e.source === "api"
       ) {
-        position = editor.getPosition();
+        $position = editor.getPosition();
       } else {
-        editor.setPosition(position);
+        editor.setPosition($position);
       }
     });
   };
@@ -108,16 +108,16 @@
     editor.onKeyDown((e) => {
       // Find out next character
       let nextChar = editor.getModel().getValueInRange({
-        startColumn: position.column,
-        endColumn: position.column + 1,
-        startLineNumber: position.lineNumber,
-        endLineNumber: position.lineNumber,
+        startColumn: $position.column,
+        endColumn: $position.column + 1,
+        startLineNumber: $position.lineNumber,
+        endLineNumber: $position.lineNumber,
       });
 
       // If the user typed the correct character move one position to the right
       if (nextChar === e.browserEvent.key) {
-        position.column++;
-        editor.setPosition(position);
+        $position.column++;
+        editor.setPosition($position);
         updateDecoration();
         correctChars.update((n) => n + 1);
         state.send("START");
@@ -129,14 +129,14 @@
       // If we are at the end of the line and the Enter is pressed
       // than go on next line
       if (!nextChar && e.browserEvent.key === "Enter") {
-        position.lineNumber++;
+        $position.lineNumber++;
 
         // Find out first non whitespace position on next line
         let lineText = editor.getModel().getLineContent(position.lineNumber);
         let firstNotWhiteSpace = lineText.match(/\S/);
-        let culumn = firstNotWhiteSpace ? firstNotWhiteSpace.index : 1;
-        position.column = culumn + 1;
-        editor.setPosition(position);
+        let culumn = firstNotWhiteSpace ? firstNotWhiteSpace.index : 0;
+        $position.column = culumn + 1;
+        editor.setPosition($position);
       }
     });
   };

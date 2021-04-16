@@ -8,6 +8,7 @@
     typedChars,
     wpm,
     accuracy,
+    position,
   } from "../stores";
   import { state } from "../states";
 
@@ -29,6 +30,7 @@
     <p>correct chars: {$correctChars}</p>
     <p>accuracy: {$accuracy}</p>
     <p>wpm: {$wpm}</p>
+    <p>position: {$position.lineNumber}; {$position.column}</p>
   {:else}
     <p class="cursor-pointer" on:click={toggle}>
       Debug<span class="ml-4">⬆️</span>
