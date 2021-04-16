@@ -5,9 +5,10 @@ import { state } from "./states";
 // Update timer (`00:00`) with the new elapsed time since last session start
 const updateTimer = () => {
   let time = get(elapsed) + 1;
-  let minutes = Math.floor(time / 60) % 60;
+  let amount = time;
+  let minutes = Math.floor(amount / 60) % 60;
   let minutesString = minutes.toString().padStart(2, "0");
-  time -= minutes * 60;
+  amount -= minutes * 60;
   let seconds = time % 60;
   let secondsString = seconds.toString().padStart(2, "0");
   let formatted = `${minutesString}:${secondsString}`;
