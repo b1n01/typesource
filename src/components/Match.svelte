@@ -6,10 +6,10 @@
   import { fileContent, fileUrl } from "../stores";
 
   const url = new URL(window.location.href);
-  let roomReady = false; // wheter the room is ready tro trigger updates
+  let roomReady = false; // wheter the room is ready tro trigger updatemaps
   let roomKey; // the room  key
   let ydoc = new Y.Doc();
-  let map = ydoc.getMap("file"); // store the url of the selected file
+  let fileMap = ydoc.getMap("file"); // store the url of the selected file
 
   // Sync file url and content
   const syncFile = (e) => {
@@ -18,11 +18,14 @@
     // Set the room as ready to trigger updates
     roomReady = true;
 
-    if (e.keysChanged.has("content") && $fileContent !== map.get("content")) {
-      fileContent.set(map.get("content"));
+    if (
+      e.keysChanged.has("content") &&
+      $fileContent !== fileMap.get("content")
+    ) {
+      fileContent.set(fileMap.get("content"));
     }
-    if (e.keysChanged.has("url") && $fileUrl !== map.get("url")) {
-      fileUrl.set(map.get("url"));
+    if (e.keysChanged.has("url") && $fileUrl !== fileMap.get("url")) {
+      fileUrl.set(fileMap.get("url"));
     }
   };
 
@@ -52,8 +55,8 @@
   const joinRoom = (roomKey) => {
     updateUrlRoomKey(roomKey);
     new WebrtcProvider(roomKey, ydoc);
-    map = ydoc.getMap("file");
-    map.observe(syncFile);
+    fileMap = ydoc.getMap("file");
+    fileMap.observe(syncFile);
   };
 
   // Leave the room
@@ -70,12 +73,12 @@
     joinRoom(roomKey);
   }
 
-  $: if (roomReady && $fileContent !== map.get("content")) {
-    map.set("content", $fileContent);
+  $: if (roomReady && $fileContent !== fileMap.get("content")) {
+    fileMap.set("content", $fileContent);
   }
 
-  $: if (roomReady && $fileUrl !== map.get("url")) {
-    map.set("url", $fileUrl);
+  $: if (roomReady && $fileUrl !== fileMap.get("url")) {
+    fileMap.set("url", $fileUrl);
   }
 </script>
 
@@ -94,6 +97,6 @@
   <Button
     label="Log map"
     class="mt-4"
-    on:click={() => console.log(map.toJSON())}
+    on:click={() => console.log(fileMap.toJSON())}
   />
 </div>
