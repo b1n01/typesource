@@ -89,7 +89,7 @@
       <Input value={url.href} readonly />
       <Button label="Copy" class="ml-4" />
     </div>
-    <Button label="Leave room" class="mt-4" on:click={leaveRoom} />
+    <Button label="Leave room" class="mt-4" danger on:click={leaveRoom} />
   {/if}
   <Button
     label="Log map"
