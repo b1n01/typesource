@@ -6,58 +6,22 @@
   import { fileContent, fileUrl } from "../stores";
 
   const url = new URL(window.location.href);
-  let inRoom = false; // wheter the user is in a room
+  let roomReady = false; // wheter the room is ready tro trigger updates
   let roomKey; // the room  key
   let ydoc = new Y.Doc();
   let map = ydoc.getMap("file"); // store the url of the selected file
 
   // Sync file url and content
   const syncFile = (e) => {
-    if (e.transaction.local) {
-      // console.log("The event is triggeder locally, do nothing");
-      return;
-    }
+    if (e.transaction.local) return;
 
-    inRoom = true;
+    // Set the room as ready to trigger updates
+    roomReady = true;
 
-    // e.changes.keys.forEach((change, key) => {
-    //   if (change.action === "add") {
-    //     console.log(
-    //       `Property "${key}" was added. Initial value: "${map
-    //         .get(key)
-    //         .substr(0, 8)}".`
-    //     );
-    //   } else if (change.action === "update") {
-    //     console.log(
-    //       `Property "${key}" was updated. New value: "${map
-    //         .get(key)
-    //         .substr(0, 8)}". Previous value: "${change.oldValue.substr(0, 8)}".`
-    //     );
-    //   } else if (change.action === "delete") {
-    //     console.log(
-    //       `Property "${key}" was deleted. New value: undefined. Previous value: "${change.oldValue.substr(
-    //         0,
-    //         8
-    //       )}".`
-    //     );
-    //   }
-    // });
-
-    // console.log("SyncFile", e);
-    if (e.keysChanged.has("content")) {
-      // console.log(
-      //   "Sync fine content changed",
-      //   "$fileContent: " + $fileContent.substr(0, 8),
-      //   ", Map content: " + map.get("content")?.substr(0, 8)
-      // );
+    if (e.keysChanged.has("content") && $fileContent !== map.get("content")) {
       fileContent.set(map.get("content"));
     }
-    if (e.keysChanged.has("url")) {
-      // console.log(
-      //   "SyncFile url changed",
-      //   "$fileUrl: " + $fileUrl,
-      //   ", Map url: " + map.get("url")
-      // );
+    if (e.keysChanged.has("url") && $fileUrl !== map.get("url")) {
       fileUrl.set(map.get("url"));
     }
   };
@@ -77,50 +41,40 @@
     window.history.pushState({ path: url.href }, "", url.href);
   };
 
-  // Enter the room
-  const enterRoom = (roomKey) => {
-    new WebrtcProvider(roomKey, ydoc);
-    map.observe((e) => syncFile(e));
+  // Create and join a room
+  const createRoom = () => {
+    roomKey = generateRoomKey();
+    roomReady = true;
+    joinRoom(roomKey);
+  };
+
+  // Join a room
+  const joinRoom = (roomKey) => {
     updateUrlRoomKey(roomKey);
+    new WebrtcProvider(roomKey, ydoc);
+    map = ydoc.getMap("file");
+    map.observe(syncFile);
   };
 
   // Leave the room
   const leaveRoom = () => {
-    roomKey = generateRoomKey();
-    inRoom = false;
-    updateUrlRoomKey();
+    roomKey = null;
+    roomReady = false;
+    updateUrlRoomKey(roomKey);
     ydoc.destroy();
-    ydoc = new Y.Doc();
-    map = ydoc.getMap("file");
-    map.set("url", "");
-    map.set("content", "");
   };
 
-  // Get or create a roomKey
+  // If the `r` param is set join the room
   if (url.searchParams.has("r")) {
     roomKey = url.searchParams.get("r");
-    enterRoom(roomKey);
-  } else {
-    map.set("url", "");
-    map.set("content", "");
-    roomKey = generateRoomKey();
+    joinRoom(roomKey);
   }
 
-  $: if (inRoom && $fileContent !== map.get("content")) {
-    // console.log(
-    //   "Setting map content",
-    //   "$fileContent: " + $fileContent.substr(0, 8),
-    //   ", Map content: " + map.get("content")?.substr(0, 8)
-    // );
+  $: if (roomReady && $fileContent !== map.get("content")) {
     map.set("content", $fileContent);
   }
 
-  $: if (inRoom && $fileUrl !== map.get("url")) {
-    // console.log(
-    //   "Setting map url",
-    //   "$fileUrl: " + $fileUrl,
-    //   ", Map url: " + map.get("url")
-    // );
+  $: if (roomReady && $fileUrl !== map.get("url")) {
     map.set("url", $fileUrl);
   }
 </script>
@@ -128,15 +82,8 @@
 <div class="p-4 rounded bg-float text-white flex flex-col">
   <h1 class="font-bold">Match</h1>
 
-  {#if !inRoom}
-    <Button
-      label="Create a room"
-      class="mt-4"
-      onClick={() => {
-        inRoom = true;
-        enterRoom(roomKey);
-      }}
-    />
+  {#if !roomReady}
+    <Button label="Create a room" class="mt-4" onClick={createRoom} />
   {:else}
     <div class="flex mt-4">
       <Input value={url.href} readonly />
