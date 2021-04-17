@@ -6,12 +6,11 @@
   import { fileContent, fileUrl, position, playersPositions } from "../stores";
 
   const url = new URL(window.location.href);
-  let roomReady = false; // wheter the room is ready tro trigger updatemaps
-  let roomKey; // the room  key
+  let roomReady = false; // wheter the room is ready tro trigger update shared ydoc
+  let roomKey; // the room key
   let ydoc = new Y.Doc();
   let fileMap = ydoc.getMap("file"); // store the url of the selected file
-  // let positions = ydoc.getArray("positions"); // store players cursors position
-  let positions = ydoc.getMap("positions"); // store players cursors position
+  let awareness; // keeps all connected players states
 
   // TODO remove this
   let userId;
@@ -49,6 +48,26 @@
     window.history.pushState({ path: url.href }, "", url.href);
   };
 
+  // Set initial user state
+  const initAwareness = () => {
+    awareness.setLocalState({
+      uid: userId,
+      position: $position,
+    });
+  };
+
+  // Listen for awareness changes and update local cursors positions
+  const handleAwareness = () => {
+    awareness.on("change", (changes) => {
+      let newPositions = [];
+      for (let [key, state] of awareness.getStates()) {
+        if (state.uid != userId) newPositions.push(state.position);
+      }
+
+      $playersPositions = newPositions;
+    });
+  };
+
   // Create and join a room
   const createRoom = () => {
     roomKey = generateRoomKey();
@@ -59,8 +78,12 @@
   // Join a room
   const joinRoom = (roomKey) => {
     updateUrlRoomKey(roomKey);
-    new WebrtcProvider(roomKey, ydoc);
-    fileMap = ydoc.getMap("file");
+
+    let provider = new WebrtcProvider(roomKey, ydoc);
+    awareness = provider.awareness;
+    initAwareness();
+    handleAwareness();
+
     fileMap.observe(syncFile);
   };
 
@@ -68,32 +91,25 @@
   const leaveRoom = () => {
     roomKey = null;
     roomReady = false;
-    updateUrlRoomKey(roomKey);
+    updateUrlRoomKey();
+    awareness.destroy();
     ydoc.destroy();
   };
 
-  positions.observe((event) => {
-    let newPositions = [];
-    for (let [uId, pos] of positions) {
-      if (uId != userId) newPositions.push(pos);
-    }
-
-    $playersPositions = newPositions;
-  });
-
-  // If the `r` param is set join the room
-  if (url.searchParams.has("r")) {
-    roomKey = url.searchParams.get("r");
-    joinRoom(roomKey);
-  }
-
-  // Todo remove this
+  // Todo remove this -----
   if (url.searchParams.has("uid")) {
     userId = url.searchParams.get("uid");
   } else {
     userId = Math.random().toString(36).substring(7);
     url.searchParams.set("uid", userId);
     window.history.pushState({ path: url.href }, "", url.href);
+  }
+  // ---------------------
+
+  // If the `r` param is set join the room
+  if (url.searchParams.has("r")) {
+    roomKey = url.searchParams.get("r");
+    joinRoom(roomKey);
   }
 
   $: if (roomReady && $fileContent !== fileMap.get("content")) {
@@ -105,7 +121,7 @@
   }
 
   $: if (roomReady && $position) {
-    positions.set(userId, $position);
+    awareness.setLocalStateField("position", $position);
   }
 </script>
 
@@ -124,6 +140,6 @@
   <Button
     label="Log map"
     class="mt-4"
-    on:click={() => console.log(fileMap.toJSON(), positions.toJSON())}
+    on:click={() => console.log(fileMap.toJSON(), awareness.getStates())}
   />
 </div>
