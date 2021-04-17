@@ -7,7 +7,7 @@
 </script>
 
 <div class="flex bg-highlight border border-border rounded w-full {propClass}">
-  <slot name="icon" />
+  <slot name="pre-icon" />
   <input
     bind:value
     on:input
@@ -16,4 +16,5 @@
     type="text"
     class="p-2 bg-transparent outline-none w-full"
   />
+  <slot name="post-icon" />
 </div>

@@ -108,7 +108,7 @@
     class="mt-4"
   >
     <img
-      slot="icon"
+      slot="pre-icon"
       src="images/search.svg"
       alt="Search icon"
       class="ml-2 w-4"

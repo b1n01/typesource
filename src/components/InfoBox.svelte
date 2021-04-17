@@ -1,5 +1,5 @@
 <script>
-  import { timer, accuracy, wpm, elapsed } from "../stores";
+  import { timer, accuracy, wpm } from "../stores";
   import { state } from "../states";
 
   let showTimer = true;
