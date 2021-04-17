@@ -133,13 +133,24 @@
   {:else}
     <div class="flex mt-4">
       <Input value={url.origin + `?r=${roomKey}`} readonly />
-      <Button label="Copy" class="ml-4" />
+      <Button label="Leave" class="ml-4" danger on:click={leaveRoom} />
     </div>
-    <Button label="Leave room" class="mt-4" danger on:click={leaveRoom} />
+    {#if $players.length}
+      <h1 class="font-bold mt-4">Live Players</h1>
+      <div class="flex flex-wrap pt-4">
+        {#each $players as player}
+          <div
+            title="{player.uid}: [{player.position.lineNumber}:{player.position
+              .column}]"
+            class="bg-gray-100 border-4 border-purple-500 rounded-full w-8 h-8 mr-2 mb-2 opacity-70 cursor-pointer hover:opacity-100"
+          />
+        {/each}
+      </div>
+    {/if}
   {/if}
-  <Button
+  <!-- <Button
     label="Log map"
     class="mt-4"
     on:click={() => console.log(fileMap.toJSON(), awareness.getStates())}
-  />
+  /> -->
 </div>
