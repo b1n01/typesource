@@ -8,12 +8,14 @@
     language as fileLanguage,
     typedChars,
     position,
+    playersPositions,
   } from "../stores.js";
   import { state } from "../states";
   import monacoConfig from "../monaco.config";
 
   let editor = null; // the editor
   let decorations = []; // decoration to gray out the content not already
+  let playersCursors = []; // decoration to show remote players position
 
   // Reset position to 1, 1
   const resetPosition = () => ($position = { lineNumber: 1, column: 1 });
@@ -83,7 +85,7 @@
         ["inactive", "stopped"].includes($state.value) ||
         e.source === "api"
       ) {
-        $position = editor.getPosition();
+        $position = { ...editor.getPosition() };
       } else {
         editor.setPosition($position);
       }
@@ -141,6 +143,21 @@
     });
   };
 
+  // Draw cursor decoration
+  const updatePlayersPositions = () => {
+    let ranges = $playersPositions.map((pos, i) => ({
+      range: new monaco.Range(
+        pos.lineNumber,
+        pos.column,
+        pos.lineNumber,
+        pos.column
+      ),
+      options: { className: `cursor cursor-${(i % 3) + 1}` },
+    }));
+
+    playersCursors = editor.deltaDecorations(playersCursors, ranges);
+  };
+
   tick().then(() => {
     // Create the editor with default theme
     createEditor();
@@ -169,6 +186,8 @@
 
   // Update editor language when fileUrl changes
   $: editor && $fileUrl && updateLanguage();
+
+  $: editor && $playersPositions && updatePlayersPositions();
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">

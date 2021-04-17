@@ -3,13 +3,18 @@
   import Button from "./Button.svelte";
   import * as Y from "yjs";
   import { WebrtcProvider } from "y-webrtc";
-  import { fileContent, fileUrl } from "../stores";
+  import { fileContent, fileUrl, position, playersPositions } from "../stores";
 
   const url = new URL(window.location.href);
   let roomReady = false; // wheter the room is ready tro trigger updatemaps
   let roomKey; // the room  key
   let ydoc = new Y.Doc();
   let fileMap = ydoc.getMap("file"); // store the url of the selected file
+  // let positions = ydoc.getArray("positions"); // store players cursors position
+  let positions = ydoc.getMap("positions"); // store players cursors position
+
+  // TODO remove this
+  let userId;
 
   // Sync file url and content
   const syncFile = (e) => {
@@ -67,10 +72,28 @@
     ydoc.destroy();
   };
 
+  positions.observe((event) => {
+    let newPositions = [];
+    for (let [uId, pos] of positions) {
+      if (uId != userId) newPositions.push(pos);
+    }
+
+    $playersPositions = newPositions;
+  });
+
   // If the `r` param is set join the room
   if (url.searchParams.has("r")) {
     roomKey = url.searchParams.get("r");
     joinRoom(roomKey);
+  }
+
+  // Todo remove this
+  if (url.searchParams.has("uid")) {
+    userId = url.searchParams.get("uid");
+  } else {
+    userId = Math.random().toString(36).substring(7);
+    url.searchParams.set("uid", userId);
+    window.history.pushState({ path: url.href }, "", url.href);
   }
 
   $: if (roomReady && $fileContent !== fileMap.get("content")) {
@@ -79,6 +102,10 @@
 
   $: if (roomReady && $fileUrl !== fileMap.get("url")) {
     fileMap.set("url", $fileUrl);
+  }
+
+  $: if (roomReady && $position) {
+    positions.set(userId, $position);
   }
 </script>
 
@@ -89,7 +116,7 @@
     <Button label="Create a room" class="mt-4" on:click={createRoom} />
   {:else}
     <div class="flex mt-4">
-      <Input value={url.href} readonly />
+      <Input value={url.origin + `?r=${roomKey}`} readonly />
       <Button label="Copy" class="ml-4" />
     </div>
     <Button label="Leave room" class="mt-4" danger on:click={leaveRoom} />
@@ -97,6 +124,6 @@
   <Button
     label="Log map"
     class="mt-4"
-    on:click={() => console.log(fileMap.toJSON())}
+    on:click={() => console.log(fileMap.toJSON(), positions.toJSON())}
   />
 </div>

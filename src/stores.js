@@ -17,4 +17,5 @@ export const wpm = writable(null); // words per minutes
 export const accuracy = writable(null); // accuracy percentages (correct chars / typed chars
 
 // Players cursors
+export const playersPositions = writable([]); // the cursor position of all players
 export const position = writable({ lineNumber: 1, column: 1 }); // player cursor position
