@@ -9,6 +9,7 @@
     wpm,
     accuracy,
     position,
+    playersPositions,
   } from "../stores";
   import { state } from "../states";
 
@@ -30,7 +31,10 @@
     <p>correct chars: {$correctChars}</p>
     <p>accuracy: {$accuracy}</p>
     <p>wpm: {$wpm}</p>
-    <p>position: {$position.lineNumber}; {$position.column}</p>
+    <p>position: {$position.lineNumber}:{$position.column}</p>
+    <p>
+      players: {$playersPositions.map((p) => `[${p.lineNumber}:${p.column}]`)}
+    </p>
   {:else}
     <p class="cursor-pointer" on:click={toggle}>
       Debug<span class="ml-4">⬆️</span>
