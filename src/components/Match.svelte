@@ -3,7 +3,7 @@
   import Button from "./Button.svelte";
   import * as Y from "yjs";
   import { WebrtcProvider } from "y-webrtc";
-  import { fileContent, fileUrl, position, playersPositions } from "../stores";
+  import { fileContent, fileUrl, position, players } from "../stores";
 
   const url = new URL(window.location.href);
   let roomReady = false; // wheter the room is ready tro trigger update shared ydoc
@@ -59,12 +59,12 @@
   // Listen for awareness changes and update local cursors positions
   const handleAwareness = () => {
     awareness.on("change", (changes) => {
-      let newPositions = [];
-      for (let [key, state] of awareness.getStates()) {
-        if (state.uid != userId) newPositions.push(state.position);
-      }
+      let states = [];
+      [...awareness.getStates().values()].forEach((state) => {
+        if (state.uid != userId) states.push(state);
+      });
 
-      $playersPositions = newPositions;
+      $players = states;
     });
   };
 

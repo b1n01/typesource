@@ -9,7 +9,7 @@
     wpm,
     accuracy,
     position,
-    playersPositions,
+    players,
   } from "../stores";
   import { state } from "../states";
 
@@ -33,7 +33,9 @@
     <p>wpm: {$wpm}</p>
     <p>position: {$position.lineNumber}:{$position.column}</p>
     <p>
-      players: {$playersPositions.map((p) => `[${p.lineNumber}:${p.column}]`)}
+      players: {$players.map(
+        (p) => `[${p.position.lineNumber}:${p.position.column}]`
+      )}
     </p>
   {:else}
     <p class="cursor-pointer" on:click={toggle}>

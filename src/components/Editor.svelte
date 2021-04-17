@@ -8,7 +8,7 @@
     language as fileLanguage,
     typedChars,
     position,
-    playersPositions,
+    players,
   } from "../stores.js";
   import { state } from "../states";
   import monacoConfig from "../monaco.config";
@@ -144,13 +144,13 @@
   };
 
   // Draw cursor decoration
-  const updatePlayersPositions = () => {
-    let ranges = $playersPositions.map((pos, i) => ({
+  const updateCursors = () => {
+    let ranges = $players.map((state, i) => ({
       range: new monaco.Range(
-        pos.lineNumber,
-        pos.column,
-        pos.lineNumber,
-        pos.column
+        state.position.lineNumber,
+        state.position.column,
+        state.position.lineNumber,
+        state.position.column
       ),
       options: { className: `cursor cursor-${(i % 3) + 1}` },
     }));
@@ -187,7 +187,7 @@
   // Update editor language when fileUrl changes
   $: editor && $fileUrl && updateLanguage();
 
-  $: editor && $playersPositions && updatePlayersPositions();
+  $: editor && $players && updateCursors();
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">
