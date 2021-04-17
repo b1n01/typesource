@@ -1,4 +1,5 @@
 <script>
+  import { fly } from "svelte/transition";
   import Input from "./Input.svelte";
   import Button from "./Button.svelte";
   import * as Y from "yjs";
@@ -6,6 +7,7 @@
   import { fileContent, fileUrl, position, players } from "../stores";
 
   const url = new URL(window.location.href);
+  let roomUrlCopied = false; // to show a confirmation for url copied to cliopbopard
   let roomReady = false; // wheter the room is ready tro trigger update shared ydoc
   let roomKey; // the room key
   let ydoc = new Y.Doc();
@@ -96,6 +98,18 @@
     ydoc.destroy();
   };
 
+  // GEt the url of the current room
+  const getRoomUrl = () => url.origin + `?r=${roomKey}`;
+
+  // Copy a value to the clipboard
+  const copyRoomUrl = () => {
+    let roomUrl = getRoomUrl();
+    navigator.clipboard.writeText(roomUrl).then(() => {
+      roomUrlCopied = true;
+      setTimeout(() => (roomUrlCopied = false), 1500);
+    });
+  };
+
   // Todo remove this -----
   if (url.searchParams.has("uid")) {
     userId = url.searchParams.get("uid");
@@ -132,7 +146,21 @@
     <Button label="Create a room" class="mt-4" on:click={createRoom} />
   {:else}
     <div class="flex mt-4">
-      <Input value={url.origin + `?r=${roomKey}`} readonly />
+      <Input value={getRoomUrl() + "asdfasdfasdf123"} readonly>
+        <span
+          slot="post-icon"
+          class="w-12 mr-2 cursor-pointer flex flex-col text-center justify-center"
+        >
+          {#if !roomUrlCopied}
+            <span on:click={copyRoomUrl}>📋</span>
+          {:else}
+            <span in:fly={{ y: 5 }} class="text-xs">
+              <span>️📋</span>
+              <span class="opacity-70">Copied</span>
+            </span>
+          {/if}
+        </span>
+      </Input>
       <Button label="Leave" class="ml-4" danger on:click={leaveRoom} />
     </div>
     {#if $players.length}
