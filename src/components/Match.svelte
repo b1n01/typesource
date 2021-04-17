@@ -165,7 +165,7 @@
     </div>
     {#if $players.length}
       <h1 class="font-bold mt-4">Live Players</h1>
-      <div class="flex flex-wrap pt-4">
+      <div class="flex flex-wrap pt-4 -mb-2">
         {#each $players as player}
           <div
             title="{player.uid}: [{player.position.lineNumber}:{player.position
