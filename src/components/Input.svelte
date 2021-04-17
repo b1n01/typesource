@@ -14,7 +14,7 @@
     {placeholder}
     {readonly}
     type="text"
-    class="p-2 bg-transparent outline-none w-full"
+    class="p-2 bg-transparent outline-none w-full overflow-ellipsis min-w-0"
   />
   <slot name="post-icon" />
 </div>
