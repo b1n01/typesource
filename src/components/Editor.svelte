@@ -10,6 +10,7 @@
     position,
     players,
     matchStarted,
+    userReady,
   } from "../stores.js";
   import { state } from "../states";
   import monacoConfig from "../monaco.config";
@@ -74,6 +75,7 @@
 
   // Update editor value with fileContent
   const updateContent = () => {
+    userReady.set(false);
     editor.getModel().setValue($fileContent);
     resetPosition();
   };
@@ -149,6 +151,7 @@
     if (!$matchStarted) {
       return;
     }
+
     let ranges = $players.map((state, i) => ({
       range: new monaco.Range(
         state.position.lineNumber,
@@ -191,6 +194,7 @@
   // Update editor language when fileUrl changes
   $: editor && $fileUrl && updateLanguage();
 
+  // Update remote players cursors
   $: editor && $players && updateCursors();
 </script>
 

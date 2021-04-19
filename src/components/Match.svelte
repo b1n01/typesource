@@ -1,10 +1,17 @@
 <script>
   import { fly } from "svelte/transition";
+  import { isEqual } from "lodash";
   import Input from "./Input.svelte";
   import Button from "./Button.svelte";
   import * as Y from "yjs";
   import { WebrtcProvider } from "y-webrtc";
-  import { fileContent, fileUrl, position, players } from "../stores";
+  import {
+    fileContent,
+    fileUrl,
+    position,
+    players,
+    userReady,
+  } from "../stores";
 
   const url = new URL(window.location.href);
   let roomUrlCopied = false; // to show a confirmation for url copied to cliopbopard
@@ -104,6 +111,7 @@
   const leaveRoom = () => {
     roomKey = null;
     roomReady = false;
+    userReady.set(false);
     updateUrlRoomKey();
     awareness.destroy();
     ydoc.destroy();
@@ -151,13 +159,13 @@
 </script>
 
 <div class="p-4 rounded bg-float text-white flex flex-col">
-  <h1 class="font-bold">Match</h1>
+  <h1 class="font-bold">Room</h1>
 
   {#if !roomReady}
     <Button label="Create a room" class="mt-4" on:click={createRoom} />
   {:else}
     <div class="flex mt-4">
-      <Input value={getRoomUrl() + "asdfasdfasdf123"} readonly>
+      <Input value={getRoomUrl()} readonly>
         <span
           slot="post-icon"
           class="w-12 mr-2 cursor-pointer flex flex-col text-center justify-center"
@@ -174,6 +182,23 @@
       </Input>
       <Button label="Leave" class="ml-4" danger on:click={leaveRoom} />
     </div>
+
+    <div class="flex items-center mt-4">
+      <h1 class="font-bold">Math</h1>
+      <div
+        class="ml-2 rounded-full w-3 h-3 {$userReady
+          ? 'bg-green-500 animate-pulse'
+          : 'bg-red-700'}"
+      />
+    </div>
+    <div class="mt-4 flex justify-between">
+      {#if !$userReady && $fileContent}
+        <Button label="I'm Ready" on:click={() => ($userReady = true)} />
+      {:else}
+        <Button label="I'm Ready" disabled />
+      {/if}
+    </div>
+
     {#if $players.length}
       <h1 class="font-bold mt-4">Live Players</h1>
       <div class="flex flex-wrap pt-4 -mb-2">
@@ -187,9 +212,4 @@
       </div>
     {/if}
   {/if}
-  <!-- <Button
-    label="Log map"
-    class="mt-4"
-    on:click={() => console.log(fileMap.toJSON(), awareness.getStates())}
-  /> -->
 </div>

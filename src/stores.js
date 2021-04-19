@@ -19,3 +19,5 @@ export const accuracy = writable(null); // accuracy percentages (correct chars /
 
 // Match
 export const players = writable([]); // the states of remote players
+export const matchStarted = writable(false); // whether the match has started
+export const userReady = writable(false); // whether the user is ready to race

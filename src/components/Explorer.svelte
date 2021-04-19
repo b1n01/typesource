@@ -1,5 +1,11 @@
 <script>
-  import { fileContent, fileUrl, correctChars, typedChars } from "../stores.js";
+  import {
+    fileContent,
+    fileUrl,
+    correctChars,
+    typedChars,
+    userReady,
+  } from "../stores.js";
   import { state } from "../states";
   import Loader from "./Loader.svelte";
   import Input from "./Input.svelte";
@@ -78,6 +84,7 @@
         state.send("STOP");
         correctChars.set(0);
         typedChars.set([]);
+        userReady.set(false);
       })
       .then(toggleLoader)
       .catch((e) => console.error(e));
