@@ -9,6 +9,7 @@
     typedChars,
     position,
     players,
+    matchStarted,
   } from "../stores.js";
   import { state } from "../states";
   import monacoConfig from "../monaco.config";
@@ -145,6 +146,9 @@
 
   // Draw cursor decoration
   const updateCursors = () => {
+    if (!$matchStarted) {
+      return;
+    }
     let ranges = $players.map((state, i) => ({
       range: new monaco.Range(
         state.position.lineNumber,

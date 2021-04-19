@@ -61,12 +61,23 @@
   // Listen for awareness changes and update local cursors positions
   const handleAwareness = () => {
     awareness.on("change", (changes) => {
+      // Update players cursor
       let states = [];
       [...awareness.getStates().values()].forEach((state) => {
         if (state.uid != userId) states.push(state);
       });
-
       $players = states;
+
+      // Set local position as last updated 'shared position'
+      const clientId = awareness.clientID;
+      let clients = [...changes.updated].filter((id) => id != clientId); // remove myself
+      if (clients.length) {
+        const updatedClientId = Math.max(clients); // If more than one client has changed keep the one with bigger id
+        const updatedState = awareness.getStates().get(updatedClientId);
+        if (!isEqual($position, updatedState.position)) {
+          $position = updatedState.position;
+        }
+      }
     });
   };
 
@@ -134,7 +145,7 @@
     fileMap.set("url", $fileUrl);
   }
 
-  $: if (roomReady && $position) {
+  $: if (roomReady && !isEqual($position, awareness.getLocalState().position)) {
     awareness.setLocalStateField("position", $position);
   }
 </script>
