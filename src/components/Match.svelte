@@ -11,7 +11,9 @@
     position,
     players,
     userReady,
+    matchStarted,
   } from "../stores";
+  import { state } from "../states";
 
   const url = new URL(window.location.href);
   let roomUrlCopied = false; // to show a confirmation for url copied to cliopbopard
@@ -20,6 +22,8 @@
   let ydoc = new Y.Doc();
   let fileMap = ydoc.getMap("file"); // store the url of the selected file
   let awareness; // keeps all connected players states
+  let matchStartsAt = ydoc.getMap("matchStart");
+  let countdown = null;
 
   // TODO remove this
   let userId;
@@ -39,6 +43,28 @@
     }
     if (e.keysChanged.has("url") && $fileUrl !== fileMap.get("url")) {
       fileUrl.set(fileMap.get("url"));
+    }
+  };
+
+  // Check id the mathc should start and the timer shiuld be shownd
+  const handleMatchStart = (e) => {
+    if (matchStartsAt.has("time")) {
+      countdown = Math.ceil((matchStartsAt.get("time") - Date.now()) / 1000);
+
+      const setCountdown = () => {
+        countdown -= 1;
+        if (countdown > 0) {
+          setTimeout(setCountdown, 1000);
+        }
+      };
+
+      setTimeout(setCountdown, 1000);
+
+      setTimeout(() => {
+        console.log("Match started, are we synced?");
+        state.send("START");
+        $matchStarted = true;
+      }, countdown * 1000);
     }
   };
 
@@ -68,6 +94,8 @@
   // Listen for awareness changes and update local cursors positions
   const handleAwareness = () => {
     awareness.on("change", (changes) => {
+      const clientId = awareness.clientID;
+
       // Update players cursor
       let states = [];
       [...awareness.getStates().values()].forEach((state) => {
@@ -76,14 +104,24 @@
       $players = states;
 
       // Set local position as last updated 'shared position'
-      const clientId = awareness.clientID;
-      let clients = [...changes.updated].filter((id) => id != clientId); // remove myself
-      if (clients.length) {
-        const updatedClientId = Math.max(clients); // If more than one client has changed keep the one with bigger id
-        const updatedState = awareness.getStates().get(updatedClientId);
-        if (!isEqual($position, updatedState.position)) {
-          $position = updatedState.position;
+      if (!$matchStarted) {
+        let clients = [...changes.updated].filter((id) => id != clientId); // remove myself
+        if (clients.length) {
+          const updatedClientId = Math.max(clients); // If more than one client has changed keep the one with bigger id
+          const updatedState = awareness.getStates().get(updatedClientId);
+          if (!isEqual($position, updatedState.position)) {
+            $position = updatedState.position;
+          }
         }
+      }
+
+      // Check if all users are set as 'ready'
+      let allUsersReady = [...awareness.getStates().values()].reduce(
+        (allReady, state) => allReady && state.ready,
+        true
+      );
+      if (allUsersReady && !matchStartsAt.get("time")) {
+        matchStartsAt.set("time", Date.now() + 5000);
       }
     });
   };
@@ -105,6 +143,7 @@
     handleAwareness();
 
     fileMap.observe(syncFile);
+    matchStartsAt.observe(handleMatchStart);
   };
 
   // Leave the room
@@ -156,6 +195,11 @@
   $: if (roomReady && !isEqual($position, awareness.getLocalState().position)) {
     awareness.setLocalStateField("position", $position);
   }
+
+  // Set user ready on the awareness object
+  $: if (roomReady && $userReady) {
+    awareness.setLocalStateField("ready", $userReady);
+  }
 </script>
 
 <div class="p-4 rounded bg-float text-white flex flex-col">
@@ -191,12 +235,14 @@
           : 'bg-red-700'}"
       />
     </div>
-    <div class="mt-4 flex justify-between">
+    <div class="mt-4">
       {#if !$userReady && $fileContent}
         <Button label="I'm Ready" on:click={() => ($userReady = true)} />
       {:else}
         <Button label="I'm Ready" disabled />
       {/if}
+
+      <span>Match countdown: {countdown}</span>
     </div>
 
     {#if $players.length}

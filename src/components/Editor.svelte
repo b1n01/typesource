@@ -148,9 +148,7 @@
 
   // Draw cursor decoration
   const updateCursors = () => {
-    if (!$matchStarted) {
-      return;
-    }
+    if (!$matchStarted) return;
 
     let ranges = $players.map((state, i) => ({
       range: new monaco.Range(
@@ -167,6 +165,7 @@
 
   // Set editor position from local postion object
   const updateLocalPosition = () => {
+    // if ($matchStarted) return;
     editor.setPosition($position);
   };
 
@@ -204,6 +203,8 @@
 
   // Update local editor position
   $: editor && $position && updateLocalPosition();
+
+  $: editor && $matchStarted && updateDecoration();
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">
