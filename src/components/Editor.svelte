@@ -165,6 +165,11 @@
     playersCursors = editor.deltaDecorations(playersCursors, ranges);
   };
 
+  // Set editor position from local postion object
+  const updateLocalPosition = () => {
+    editor.setPosition($position);
+  };
+
   tick().then(() => {
     // Create the editor with default theme
     createEditor();
@@ -196,6 +201,9 @@
 
   // Update remote players cursors
   $: editor && $players && updateCursors();
+
+  // Update local editor position
+  $: editor && $position && updateLocalPosition();
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">
