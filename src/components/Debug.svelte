@@ -1,6 +1,5 @@
 <script>
   import {
-    fileUrl,
     language,
     timer,
     elapsed,
@@ -10,6 +9,7 @@
     accuracy,
     position,
     players,
+    fileMap,
   } from "../stores";
   import { state } from "../states";
 
@@ -24,7 +24,9 @@
     <p class="flex justify-between cursor-pointer pb-2" on:click={toggle}>
       Debug<span>❌</span>
     </p>
-    <p>file: {$fileUrl ? $fileUrl.split("/").pop() : ""}</p>
+    <p>
+      file: {$fileMap.has("url") ? $fileMap.get("url").split("/").pop() : ""}
+    </p>
     <p>lang: {$language || ""}</p>
     <p>state: {$state.value}</p>
     <p>elapsed: {$elapsed}</p>

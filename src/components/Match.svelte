@@ -3,48 +3,28 @@
   import { isEqual } from "lodash";
   import Input from "./Input.svelte";
   import Button from "./Button.svelte";
-  import * as Y from "yjs";
   import { WebrtcProvider } from "y-webrtc";
+  import { state } from "../states";
+  import { ydoc } from "../ystore";
   import {
-    fileContent,
-    fileUrl,
     position,
     players,
     userReady,
     matchStarted,
+    fileMap,
   } from "../stores";
-  import { state } from "../states";
 
   const url = new URL(window.location.href);
   let roomUrlCopied = false; // to show a confirmation for url copied to cliopbopard
   let roomReady = false; // wheter the room is ready tro trigger update shared ydoc
   let roomKey; // the room key
-  let ydoc = new Y.Doc();
-  let fileMap = ydoc.getMap("file"); // store the url of the selected file
+
   let awareness; // keeps all connected players states
   let matchStartsAt = ydoc.getMap("matchStart");
   let countdown = null;
 
   // TODO remove this
   let userId;
-
-  // Sync file url and content
-  const syncFile = (e) => {
-    if (e.transaction.local) return;
-
-    // Set the room as ready to trigger updates
-    roomReady = true;
-
-    if (
-      e.keysChanged.has("content") &&
-      $fileContent !== fileMap.get("content")
-    ) {
-      fileContent.set(fileMap.get("content"));
-    }
-    if (e.keysChanged.has("url") && $fileUrl !== fileMap.get("url")) {
-      fileUrl.set(fileMap.get("url"));
-    }
-  };
 
   // Check id the mathc should start and the timer shiuld be shownd
   const handleMatchStart = (e) => {
@@ -142,7 +122,6 @@
     initAwareness();
     handleAwareness();
 
-    fileMap.observe(syncFile);
     matchStartsAt.observe(handleMatchStart);
   };
 
@@ -182,14 +161,6 @@
   if (url.searchParams.has("r")) {
     roomKey = url.searchParams.get("r");
     joinRoom(roomKey);
-  }
-
-  $: if (roomReady && $fileContent !== fileMap.get("content")) {
-    fileMap.set("content", $fileContent);
-  }
-
-  $: if (roomReady && $fileUrl !== fileMap.get("url")) {
-    fileMap.set("url", $fileUrl);
   }
 
   $: if (roomReady && !isEqual($position, awareness.getLocalState().position)) {
@@ -236,7 +207,7 @@
       />
     </div>
     <div class="mt-4">
-      {#if !$userReady && $fileContent}
+      {#if !$userReady && $fileMap.get("content")}
         <Button label="I'm Ready" on:click={() => ($userReady = true)} />
       {:else}
         <Button label="I'm Ready" disabled />

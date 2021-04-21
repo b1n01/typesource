@@ -2,8 +2,6 @@
   import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
   import { tick } from "svelte";
   import {
-    fileContent,
-    fileUrl,
     correctChars,
     language as fileLanguage,
     typedChars,
@@ -11,6 +9,7 @@
     players,
     matchStarted,
     userReady,
+    fileMap,
   } from "../stores.js";
   import { state } from "../states";
   import monacoConfig from "../monaco.config";
@@ -61,23 +60,24 @@
     setTimeout(monaco.editor.remeasureFonts, delay);
   };
 
-  // Update editor language when fileUrl changes
-  const updateLanguage = () => {
-    const extension = $fileUrl.split(".").pop();
+  // Get the language id from an url (with a file as path)
+  const getLanguageFromUrl = (url) => {
+    const extension = url.split(".").pop();
     const languages = monaco.languages.getLanguages();
     const language = languages.find((lang) =>
       lang.extensions.includes("." + extension)
     );
-    const languageId = language ? language.id : "plaintext";
-    monaco.editor.setModelLanguage(editor.getModel(), languageId);
-    fileLanguage.set(languageId);
+    return language ? language.id : "plaintext";
   };
 
-  // Update editor value with fileContent
-  const updateContent = () => {
-    userReady.set(false);
-    editor.getModel().setValue($fileContent);
-    resetPosition();
+  // Set the editor language
+  const setEditorLanguage = (language) => {
+    monaco.editor.setModelLanguage(editor.getModel(), language);
+  };
+
+  // Update the editor content
+  const setEditorContent = (content) => {
+    editor.getModel().setValue(content);
   };
 
   // Only let cursor position to be updated from `api` or by human if the
@@ -146,6 +146,25 @@
     });
   };
 
+  // Listen for change on the fileMap and
+  const handleFileUpdate = () => {
+    const content = fileMap.get("content");
+    if (content) {
+      console.log("Setting file content");
+      setEditorContent(content);
+      resetPosition();
+      $userReady = false;
+    }
+
+    const url = fileMap.get("url");
+    if (url) {
+      console.log("Setting file url");
+      const language = getLanguageFromUrl(url);
+      setEditorLanguage(language);
+      $fileLanguage = language;
+    }
+  };
+
   // Draw cursor decoration
   const updateCursors = () => {
     if (!$matchStarted) return;
@@ -192,11 +211,8 @@
     handleBlur();
   });
 
-  // Update editor value when fileContent changes
-  $: editor && $fileContent && updateContent();
-
-  // Update editor language when fileUrl changes
-  $: editor && $fileUrl && updateLanguage();
+  // Handle file change
+  $: editor && $fileMap && handleFileUpdate();
 
   // Update remote players cursors
   $: editor && $players && updateCursors();

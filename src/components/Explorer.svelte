@@ -1,11 +1,5 @@
 <script>
-  import {
-    fileContent,
-    fileUrl,
-    correctChars,
-    typedChars,
-    userReady,
-  } from "../stores.js";
+  import { correctChars, typedChars, userReady, fileMap } from "../stores.js";
   import { state } from "../states";
   import Loader from "./Loader.svelte";
   import Input from "./Input.svelte";
@@ -79,8 +73,8 @@
     fetch(file.download_url)
       .then((res) => res.text())
       .then((data) => {
-        fileContent.set(data);
-        fileUrl.set(file.download_url);
+        fileMap.set("content", data);
+        fileMap.set("url", file.download_url);
         state.send("STOP");
         correctChars.set(0);
         typedChars.set([]);
