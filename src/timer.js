@@ -21,19 +21,10 @@ const updateTimer = () => {
 // when the state changes.
 export const init = () => {
   userState.subscribe((state) => {
-    if (state.changed) {
-      switch (state.value) {
-        case "offline.active":
-          start();
-          break;
-        case "offline.paused":
-          pause();
-          break;
-        case "offline.stopped":
-          stop();
-          break;
-      }
-    }
+    if (!state.changed) return;
+    if (state.matches("offline.active")) start();
+    if (state.matches("offline.paused")) pause();
+    if (state.matches("offline.stopped")) stop();
   });
 };
 
