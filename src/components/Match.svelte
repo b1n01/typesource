@@ -4,20 +4,13 @@
   import Input from "./Input.svelte";
   import Button from "./Button.svelte";
   import { WebrtcProvider } from "y-webrtc";
-  import { state } from "../states";
-  import { ydoc } from "../ystore";
-  import {
-    position,
-    players,
-    userReady,
-    matchStarted,
-    fileMap,
-  } from "../stores";
+  import { userState } from "../states";
+  import { ydoc } from "../ystores";
+  import { position, players, fileUrl } from "../stores";
 
-  const url = new URL(window.location.href);
-  let roomUrlCopied = false; // to show a confirmation for url copied to cliopbopard
-  let roomReady = false; // wheter the room is ready tro trigger update shared ydoc
-  let roomKey; // the room key
+  const url = new URL(window.location.href); // the url
+  let showCopyLabel = false; // wheter to show a confirmation for copying to clipboard
+  let roomKey = null; // the room key
 
   let awareness; // keeps all connected players states
   let matchStartsAt = ydoc.getMap("matchStart");
@@ -26,7 +19,7 @@
   // TODO remove this
   let userId;
 
-  // Check id the mathc should start and the timer shiuld be shownd
+  // Check if the match should start and the timer should be showed
   const handleMatchStart = (e) => {
     if (matchStartsAt.has("time")) {
       countdown = Math.ceil((matchStartsAt.get("time") - Date.now()) / 1000);
@@ -42,8 +35,7 @@
 
       setTimeout(() => {
         console.log("Match started, are we synced?");
-        state.send("START");
-        $matchStarted = true;
+        userState.send("START");
       }, countdown * 1000);
     }
   };
@@ -77,14 +69,13 @@
       const clientId = awareness.clientID;
 
       // Update players cursor
-      let states = [];
-      [...awareness.getStates().values()].forEach((state) => {
-        if (state.uid != userId) states.push(state);
-      });
-      $players = states;
+      $players = [...awareness.getStates().values()].reduce(
+        (states, state) => (state.uid != userId ? [...states, state] : states),
+        []
+      );
 
       // Set local position as last updated 'shared position'
-      if (!$matchStarted) {
+      if ($userState.matches("online.lobby")) {
         let clients = [...changes.updated].filter((id) => id != clientId); // remove myself
         if (clients.length) {
           const updatedClientId = Math.max(clients); // If more than one client has changed keep the one with bigger id
@@ -109,7 +100,6 @@
   // Create and join a room
   const createRoom = () => {
     roomKey = generateRoomKey();
-    roomReady = true;
     joinRoom(roomKey);
   };
 
@@ -123,16 +113,17 @@
     handleAwareness();
 
     matchStartsAt.observe(handleMatchStart);
+
+    userState.send("ONLINE");
   };
 
   // Leave the room
   const leaveRoom = () => {
     roomKey = null;
-    roomReady = false;
-    userReady.set(false);
     updateUrlRoomKey();
     awareness.destroy();
-    ydoc.destroy();
+    // ydoc.destroy();
+    userState.send("OFFLINE");
   };
 
   // GEt the url of the current room
@@ -142,9 +133,14 @@
   const copyRoomUrl = () => {
     let roomUrl = getRoomUrl();
     navigator.clipboard.writeText(roomUrl).then(() => {
-      roomUrlCopied = true;
-      setTimeout(() => (roomUrlCopied = false), 1500);
+      showCopyLabel = true;
+      setTimeout(() => (showCopyLabel = false), 1500);
     });
+  };
+
+  // Set the READY event
+  const setUserAsReady = () => {
+    userState.send("READY");
   };
 
   // Todo remove this -----
@@ -163,20 +159,29 @@
     joinRoom(roomKey);
   }
 
-  $: if (roomReady && !isEqual($position, awareness.getLocalState().position)) {
+  // Update all pears with user new position
+  $: if (awareness && !isEqual($position, awareness.getLocalState().position)) {
+    console.log("Setting local position to awareness");
     awareness.setLocalStateField("position", $position);
   }
 
   // Set user ready on the awareness object
-  $: if (roomReady && $userReady) {
-    awareness.setLocalStateField("ready", $userReady);
+  $: if ($userState.matches("online.ready")) {
+    console.log("Setting READY to awareness");
+    awareness.setLocalStateField("ready", true);
+  }
+
+  // When the user is online and the file changes set as not ready
+  $: if ($fileUrl && awareness) {
+    console.log("Setting NOT READY to awareness");
+    awareness.setLocalStateField("ready", false);
   }
 </script>
 
 <div class="p-4 rounded bg-float text-white flex flex-col">
   <h1 class="font-bold">Room</h1>
 
-  {#if !roomReady}
+  {#if !roomKey}
     <Button label="Create a room" class="mt-4" on:click={createRoom} />
   {:else}
     <div class="flex mt-4">
@@ -185,7 +190,7 @@
           slot="post-icon"
           class="w-12 mr-2 cursor-pointer flex flex-col text-center justify-center"
         >
-          {#if !roomUrlCopied}
+          {#if !showCopyLabel}
             <span on:click={copyRoomUrl}>📋</span>
           {:else}
             <span in:fly={{ y: 5 }} class="text-xs">
@@ -199,16 +204,16 @@
     </div>
 
     <div class="flex items-center mt-4">
-      <h1 class="font-bold">Math</h1>
+      <h1 class="font-bold">Match</h1>
       <div
-        class="ml-2 rounded-full w-3 h-3 {$userReady
+        class="ml-2 rounded-full w-3 h-3 {$userState.matches('online.ready')
           ? 'bg-green-500 animate-pulse'
           : 'bg-red-700'}"
       />
     </div>
     <div class="mt-4">
-      {#if !$userReady && $fileMap.get("content")}
-        <Button label="I'm Ready" on:click={() => ($userReady = true)} />
+      {#if $fileUrl && $userState.matches("online.lobby")}
+        <Button label="I'm Ready" on:click={setUserAsReady} />
       {:else}
         <Button label="I'm Ready" disabled />
       {/if}

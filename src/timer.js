@@ -1,6 +1,6 @@
 import { get } from "svelte/store";
 import { elapsed, interval, timer } from "./stores";
-import { state } from "./states";
+import { userState } from "./states";
 
 // Update timer (`00:00`) with the new elapsed time since last session start
 const updateTimer = () => {
@@ -20,16 +20,16 @@ const updateTimer = () => {
 // Initialize the Timer to automatically start/pausa/stop the timer
 // when the state changes.
 export const init = () => {
-  state.subscribe((state) => {
+  userState.subscribe((state) => {
     if (state.changed) {
       switch (state.value) {
-        case "active":
+        case "offline.active":
           start();
           break;
-        case "paused":
+        case "offline.paused":
           pause();
           break;
-        case "stopped":
+        case "offline.stopped":
           stop();
           break;
       }

@@ -1,6 +1,6 @@
 <script>
-  import { correctChars, typedChars, userReady, fileMap } from "../stores.js";
-  import { state } from "../states";
+  import { correctChars, typedChars, fileUrl } from "../stores.js";
+  import { userState } from "../states";
   import Loader from "./Loader.svelte";
   import Input from "./Input.svelte";
 
@@ -68,20 +68,10 @@
 
   // Select a file
   const selectFile = (file) => {
-    toggleLoader();
-
-    fetch(file.download_url)
-      .then((res) => res.text())
-      .then((data) => {
-        fileMap.set("content", data);
-        fileMap.set("url", file.download_url);
-        state.send("STOP");
-        correctChars.set(0);
-        typedChars.set([]);
-        userReady.set(false);
-      })
-      .then(toggleLoader)
-      .catch((e) => console.error(e));
+    fileUrl.set(file.download_url);
+    userState.send("STOP");
+    correctChars.set(0);
+    typedChars.set([]);
   };
 
   // Get repo url path

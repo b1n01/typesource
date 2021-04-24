@@ -1,15 +1,15 @@
 <script>
   import { timer, accuracy, wpm } from "../stores";
-  import { state } from "../states";
+  import { userState } from "../states";
 
   let showTimer = true;
   setInterval(() => {
-    showTimer = $state.value === "paused" ? !showTimer : true;
+    showTimer = $userState.matches("offline.paused") ? !showTimer : true;
   }, 1000);
 
   $: items = [
     {
-      label: `time ${$state.value === "paused" ? "⏸️" : ""}`,
+      label: `time ${$userState.matches("offline.paused") ? "⏸️" : ""}`,
       data: showTimer ? $timer : $timer.replace(":", " "),
     },
     { label: "wpm", data: $wpm || "-" },

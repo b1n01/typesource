@@ -3,15 +3,12 @@
   import { tick } from "svelte";
   import {
     correctChars,
-    language as fileLanguage,
     typedChars,
     position,
     players,
-    matchStarted,
-    userReady,
-    fileMap,
+    fileUrl,
   } from "../stores.js";
-  import { state } from "../states";
+  import { userState } from "../states";
   import monacoConfig from "../monaco.config";
 
   let editor = null; // the editor
@@ -85,7 +82,7 @@
   const preventPositionChange = () => {
     editor.onDidChangeCursorPosition((e) => {
       if (
-        ["inactive", "stopped"].includes($state.value) ||
+        ["offline.inactive", "offline.stopped"].some($userState.matches) ||
         e.source === "api"
       ) {
         $position = { ...editor.getPosition() };
@@ -104,7 +101,7 @@
   // On blur set state paused
   const handleBlur = () => {
     editor.onDidBlurEditorText(() => {
-      state.send("PAUSE");
+      userState.send("PAUSE");
     });
   };
 
@@ -125,11 +122,11 @@
         editor.setPosition($position);
         updateDecoration();
         correctChars.update((n) => n + 1);
-        state.send("START");
+        userState.send("START");
       }
 
       // Update typed characters
-      if ($state.value === "active") typedChars.update((n) => n + 1);
+      if ($userState.matches("offline.active")) typedChars.update((n) => n + 1);
 
       // If we are at the end of the line and the Enter is pressed
       // than go on next line
@@ -146,28 +143,27 @@
     });
   };
 
-  // Listen for change on the fileMap and
-  const handleFileUpdate = () => {
-    const content = fileMap.get("content");
-    if (content) {
-      console.log("Setting file content");
-      setEditorContent(content);
-      resetPosition();
-      $userReady = false;
-    }
+  // Handle file url change
+  const handleFileUrlUpdate = () => {
+    const url = $fileUrl;
 
-    const url = fileMap.get("url");
     if (url) {
-      console.log("Setting file url");
+      fetch(url)
+        .then((res) => res.text())
+        .then((content) => {
+          setEditorContent(content);
+          resetPosition();
+        })
+        .catch((e) => console.error(e));
+
       const language = getLanguageFromUrl(url);
       setEditorLanguage(language);
-      $fileLanguage = language;
     }
   };
 
   // Draw cursor decoration
   const updateCursors = () => {
-    if (!$matchStarted) return;
+    if (!$userState.matches("online.playing")) return;
 
     let ranges = $players.map((state, i) => ({
       range: new monaco.Range(
@@ -184,7 +180,6 @@
 
   // Set editor position from local postion object
   const updateLocalPosition = () => {
-    // if ($matchStarted) return;
     editor.setPosition($position);
   };
 
@@ -212,7 +207,7 @@
   });
 
   // Handle file change
-  $: editor && $fileMap && handleFileUpdate();
+  $: editor && $fileUrl && handleFileUrlUpdate();
 
   // Update remote players cursors
   $: editor && $players && updateCursors();
@@ -220,7 +215,8 @@
   // Update local editor position
   $: editor && $position && updateLocalPosition();
 
-  $: editor && $matchStarted && updateDecoration();
+  // Update the editor decoration (gray text)
+  $: editor && $userState.matches("online.playing") && updateDecoration();
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">

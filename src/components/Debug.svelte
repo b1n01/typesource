@@ -1,6 +1,5 @@
 <script>
   import {
-    language,
     timer,
     elapsed,
     correctChars,
@@ -9,9 +8,9 @@
     accuracy,
     position,
     players,
-    fileMap,
+    fileUrl,
   } from "../stores";
-  import { state } from "../states";
+  import { userState } from "../states";
 
   let show = false;
   const toggle = () => (show = !show);
@@ -24,11 +23,9 @@
     <p class="flex justify-between cursor-pointer pb-2" on:click={toggle}>
       Debug<span>❌</span>
     </p>
-    <p>
-      file: {$fileMap.has("url") ? $fileMap.get("url").split("/").pop() : ""}
-    </p>
-    <p>lang: {$language || ""}</p>
-    <p>state: {$state.value}</p>
+    <p>file: {$fileUrl.split("/").pop() || ""}</p>
+    <p>lang: TODO</p>
+    <p>editor state: {JSON.stringify($userState.value)}</p>
     <p>elapsed: {$elapsed}</p>
     <p>timer: {$timer}</p>
     <p>typed chars: {$typedChars.length}</p>
