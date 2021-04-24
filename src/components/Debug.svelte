@@ -10,6 +10,7 @@
     players,
     fileUrl,
   } from "../stores";
+  import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
 
   let show = false;
@@ -24,7 +25,7 @@
       Debug<span>❌</span>
     </p>
     <p>file: {$fileUrl.split("/").pop() || ""}</p>
-    <p>lang: TODO</p>
+    <p>lang: {getLanguageFromUrl($fileUrl)}</p>
     <p>editor state: {JSON.stringify($userState.value)}</p>
     <p>elapsed: {$elapsed}</p>
     <p>timer: {$timer}</p>

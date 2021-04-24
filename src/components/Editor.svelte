@@ -8,6 +8,7 @@
     players,
     fileUrl,
   } from "../stores.js";
+  import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
   import monacoConfig from "../monaco.config";
 
@@ -55,16 +56,6 @@
   // see https://github.com/microsoft/monaco-editor/issues/648#issuecomment-564978560
   const remeasureFonts = (delay = 350) => {
     setTimeout(monaco.editor.remeasureFonts, delay);
-  };
-
-  // Get the language id from an url (with a file as path)
-  const getLanguageFromUrl = (url) => {
-    const extension = url.split(".").pop();
-    const languages = monaco.languages.getLanguages();
-    const language = languages.find((lang) =>
-      lang.extensions.includes("." + extension)
-    );
-    return language ? language.id : "plaintext";
   };
 
   // Set the editor language
