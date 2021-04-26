@@ -68,12 +68,14 @@
     editor.getModel().setValue(content);
   };
 
-  // Only let cursor position to be updated from `api` or by human if the
-  // state is `inactive` or `stopped`
+  // Only let cursor position to be updated from `api` or by human if the state is
+  // in some specific states
   const preventPositionChange = () => {
     editor.onDidChangeCursorPosition((e) => {
       if (
-        ["offline.inactive", "offline.stopped"].some($userState.matches) ||
+        ["offline.inactive", "offline.stopped", "online.lobby"].some(
+          $userState.matches
+        ) ||
         e.source === "api"
       ) {
         $position = { ...editor.getPosition() };
@@ -171,6 +173,7 @@
 
   // Set editor position from local postion object
   const updateLocalPosition = () => {
+    console.log("Updating editor position", $position);
     editor.setPosition($position);
   };
 
