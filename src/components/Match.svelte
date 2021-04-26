@@ -34,9 +34,16 @@
       userState.send("COUNTDOWN");
       setTimeout(setCountdown, 1000);
 
+      // Staring the match
       setTimeout(() => {
         userState.send("GO");
       }, countdown * 1000);
+
+      // TODO handle this in a better way
+      // Finish the match
+      setTimeout(() => {
+        userState.send("END");
+      }, countdown * 1000 + 10 * 1000); // 10 seconds match
     }
   };
 

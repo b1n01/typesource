@@ -25,6 +25,8 @@ export const init = () => {
     if (state.matches("offline.active")) start();
     if (state.matches("offline.paused")) pause();
     if (state.matches("offline.stopped")) stop();
+    if (state.matches("online.playing")) start();
+    if (state.matches("online.finished")) stop();
   });
 };
 

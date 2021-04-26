@@ -173,7 +173,6 @@
 
   // Set editor position from local postion object
   const updateLocalPosition = () => {
-    console.log("Updating editor position", $position);
     editor.setPosition($position);
   };
 
