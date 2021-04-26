@@ -35,7 +35,6 @@
       setTimeout(setCountdown, 1000);
 
       setTimeout(() => {
-        console.log("Match started, are we synced?");
         userState.send("GO");
       }, countdown * 1000);
     }
@@ -162,20 +161,18 @@
 
   // Update all pears with user new position
   $: if (awareness && !isEqual($position, awareness.getLocalState().position)) {
-    console.log("Setting local position to awareness");
     awareness.setLocalStateField("position", $position);
   }
 
   // Set user ready on the awareness object
   $: if ($userState.matches("online.ready")) {
-    console.log("Setting READY to awareness");
     awareness.setLocalStateField("ready", true);
   }
 
   // When the user is online and the file changes set as not ready
   $: if ($fileUrl && awareness) {
-    console.log("Setting NOT READY to awareness");
     awareness.setLocalStateField("ready", false);
+    userState.send("STOP");
   }
 </script>
 
