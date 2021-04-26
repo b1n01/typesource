@@ -167,7 +167,10 @@
   }
 
   // Update all pears with user new position
-  $: if (awareness && !isEqual($position, awareness.getLocalState().position)) {
+  $: if (
+    awareness &&
+    !isEqual($position, awareness.getLocalState()?.position)
+  ) {
     awareness.setLocalStateField("position", $position);
   }
 
