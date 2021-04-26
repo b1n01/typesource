@@ -28,17 +28,22 @@
     );
   };
 
-  // This function updatedes the decoration (grayed out text)
+  // This function updatedes the decoration with the local position(grayed out text)
   const updateDecoration = () => {
+    setDecoration($position.lineNumber, $position.column, 1000, 1000);
+  };
+
+  // Remove decoration (grayed out text)
+  const removeDecoration = () => {
+    setDecoration(1000, 1000, 1000, 1000);
+  };
+
+  // Set decoration (grayed out text)
+  const setDecoration = (...positions) => {
     decorations = editor.deltaDecorations(decorations, [
       {
         options: { inlineClassName: "grayedOut" },
-        range: new monaco.Range(
-          $position.lineNumber,
-          $position.column,
-          10000,
-          10000
-        ),
+        range: new monaco.Range(...positions),
       },
     ]);
   };
@@ -101,6 +106,13 @@
   // Catch user keypress and check if the cursor should move
   const handleTyping = () => {
     editor.onKeyDown((e) => {
+      if (!["offline.active", "online.playing"].some($userState.matches)) {
+        return;
+      }
+
+      // Update typed characters
+      typedChars.update((n) => n + 1);
+
       // Find out next character
       let nextChar = editor.getModel().getValueInRange({
         startColumn: $position.column,
@@ -117,9 +129,6 @@
         correctChars.update((n) => n + 1);
         userState.send("START");
       }
-
-      // Update typed characters
-      if ($userState.matches("offline.active")) typedChars.update((n) => n + 1);
 
       // If we are at the end of the line and the Enter is pressed
       // than go on next line
@@ -210,6 +219,9 @@
 
   // Update the editor decoration (gray text)
   $: editor && $userState.matches("online.playing") && updateDecoration();
+
+  // Reset decoration (gray text) when the match finishes
+  $: editor && $userState.matches("online.finished") && removeDecoration();
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">
