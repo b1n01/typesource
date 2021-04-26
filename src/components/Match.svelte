@@ -80,6 +80,7 @@
         (states, state) => (state.uid != userId ? [...states, state] : states),
         []
       );
+      console.log($players);
 
       // Set local position as last updated 'shared position'
       if ($userState.matches("online.lobby")) {
@@ -232,11 +233,13 @@
     {#if $players.length}
       <h1 class="font-bold mt-4">Live Players</h1>
       <div class="flex flex-wrap pt-4 -mb-2">
-        {#each $players as player}
+        {#each $players as player, i}
           <div
-            title="{player.uid}: [{player.position.lineNumber}:{player.position
-              .column}]"
-            class="bg-gray-100 border-4 border-purple-500 rounded-full w-8 h-8 mr-2 mb-2 opacity-70 cursor-pointer hover:opacity-100"
+            title="{player.uid} is {player.ready ? 'ready' : 'not ready'}"
+            class="bg-gray-100 border-4 rounded-full w-8 h-8 mr-2 mb-2 cursor-pointer
+            {player.ready
+              ? 'opacity-100'
+              : 'opacity-30'} cursor-{(i % 3) + 1}"
           />
         {/each}
       </div>

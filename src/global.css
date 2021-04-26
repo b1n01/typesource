@@ -11,12 +11,17 @@
 .cursor {
   width: 2px !important;
 }
+/* Define both background and corder-color to show the edito cursors 
+and the Live Players bubble*/
 .cursor-1 {
   background: rgb(220, 70, 10);
+  border-color: rgb(220, 70, 10);
 }
 .cursor-2 {
   background: rgb(170, 30, 150);
+  border-color: rgb(170, 30, 150);
 }
 .cursor-3 {
   background: rgb(10, 210, 70);
+  border-color: rgb(10, 210, 70);
 }
