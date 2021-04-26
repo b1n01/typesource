@@ -14,7 +14,7 @@
 
   let awareness; // keeps all connected players states
   let matchStartsAt = ydoc.getMap("matchStart");
-  let countdown = null;
+  let countdown; // how many seconds until the match starts
 
   // TODO remove this
   let userId;
@@ -80,7 +80,6 @@
         (states, state) => (state.uid != userId ? [...states, state] : states),
         []
       );
-      console.log($players);
 
       // Set local position as last updated 'shared position'
       if ($userState.matches("online.lobby")) {
@@ -180,6 +179,15 @@
     awareness.setLocalStateField("ready", true);
   }
 
+  // Set user as not ready when the match ends
+  $: if ($userState.matches("online.finished")) {
+    console.log("Set user as not ready");
+    awareness.setLocalStateField("ready", false);
+    matchStartsAt.delete("time");
+    countdown = null;
+    userState.send("RESTART");
+  }
+
   // When the user is online and the file changes set as not ready
   $: if ($fileUrl && awareness) {
     awareness.setLocalStateField("ready", false);
@@ -227,7 +235,9 @@
         <Button label="I'm Ready" disabled />
       {/if}
 
-      <span>Match countdown: {countdown}</span>
+      {#if countdown}
+        <span class="ml-4">Match starting in {countdown}</span>
+      {/if}
     </div>
 
     {#if $players.length}
