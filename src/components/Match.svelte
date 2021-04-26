@@ -31,11 +31,12 @@
         }
       };
 
+      userState.send("COUNTDOWN");
       setTimeout(setCountdown, 1000);
 
       setTimeout(() => {
         console.log("Match started, are we synced?");
-        userState.send("START");
+        userState.send("GO");
       }, countdown * 1000);
     }
   };
