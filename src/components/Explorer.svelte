@@ -68,6 +68,11 @@
 
   // Select a file
   const selectFile = (file) => {
+    // Prevent the user for sweelecting a different file if is ready or playing
+    if (["online.playing", "online.ready"].some($userState.matches)) {
+      return;
+    }
+
     fileUrl.set(file.download_url);
     userState.send("STOP");
     correctChars.set(0);
