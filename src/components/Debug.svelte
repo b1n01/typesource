@@ -18,7 +18,7 @@
 </script>
 
 <section
-  class="text-white bg-gray-900 p-2 absolute bottom-2 left-2 text-sm max-w-xs"
+  class="text-white bg-gray-900 p-2 absolute bottom-2 right-2 text-sm max-w-xs"
 >
   {#if show}
     <p class="flex justify-between cursor-pointer pb-2" on:click={toggle}>

@@ -17,7 +17,7 @@
   ];
 </script>
 
-<div class="text-white mx-4 flex justify-between">
+<div class="text-white mx-4 flex flex-row-reverse justify-between">
   {#each items as item, index}
     <div class="flex flex-col text-center">
       <span class="text-opacity-70 text-sm">{item.label}</span>
