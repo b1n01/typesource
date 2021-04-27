@@ -15,6 +15,7 @@
   let editor = null; // the editor
   let decorations = []; // decoration to gray out the content not already
   let playersCursors = []; // decoration to show remote players position
+  let editorRef = null; //Reference to the editor div
 
   // Reset position to 1, 1
   const resetPosition = () => ($position = { lineNumber: 1, column: 1 });
@@ -106,6 +107,10 @@
   // Catch user keypress and check if the cursor should move
   const handleTyping = () => {
     editor.onKeyDown((e) => {
+      if (["offline.inactive", "offline.paused"].some($userState.matches)) {
+        userState.send("START");
+      }
+
       if (!["offline.active", "online.playing"].some($userState.matches)) {
         return;
       }
@@ -127,7 +132,6 @@
         editor.setPosition($position);
         updateDecoration();
         correctChars.update((n) => n + 1);
-        userState.send("START");
       }
 
       // If we are at the end of the line and the Enter is pressed
@@ -185,6 +189,22 @@
     editor.setPosition($position);
   };
 
+  // Prevent keyboard navigation (tab and spacebar to scroll)
+  // when the editor has focus
+  const preventKeyboardNavigation = () => {
+    document.onkeydown = function (e) {
+      // If the editor has focus and the key press is a navigation key
+      // prevent default
+      if (
+        editorRef.contains(document.activeElement) &&
+        ["Space", "Tab"].includes(e.code)
+      ) {
+        console.log("Prevent keyboard navigation");
+        e.preventDefault();
+      }
+    };
+  };
+
   tick().then(() => {
     // Create the editor with default theme
     createEditor();
@@ -206,6 +226,9 @@
 
     // Set state as paused on editor blur
     handleBlur();
+
+    // Pent keybord navigation when the editor has focus
+    preventKeyboardNavigation();
   });
 
   // Handle file change
@@ -225,7 +248,7 @@
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">
-  <div class="h-full w-full" id="monaco" />
+  <div bind:this={editorRef} class="h-full w-full" id="monaco" />
 </div>
 
 <style>
