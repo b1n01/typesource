@@ -3,57 +3,41 @@ import * as Y from "yjs";
 // Ydoc shared instance
 export const ydoc = new Y.Doc();
 
-// Get a primitive type wrapped in a svelte store
-export const getStore = (key, init = undefined) => {
-  let handlers = []; // array of subscribers callbacks
-  let ymap = ydoc.getMap(key); // the Y.Map
-  ymap.set(key, init); // initialize with the default value
+// `ystores` are Svelte stores (see https://svelte.dev/docs#Store_contract)
+// that wraps Yjs maps (https://github.com/y-js/y-map).
+// Use it like:
+// import { getStore } from '../ystores';
+// const message = getStore('message', 'Default value');
+// $message = 'New message';
+// const content = $message;
 
-  // Listen the ymap and update all local subscribers
-  ymap.observe(() => {
-    handlers.forEach((handler) => handler(ymap.get(key)));
-    // TODO: should we start observing the ymap only when we get the first subscriber?
-  });
+/**
+ * Implement the Svlete store contract to wrap a primitive type
+ * @param {string} key An identidier for the Ydoc
+ * @param {*} init Initial value
+ * @returns {Object}
+ */
+export const getStore = (key, init = undefined) => {
+  let handlers = [];
+  const ymap = ydoc.getMap(key);
+
+  // When the ymap changes update all local subscribers
+  ymap.observe(() => handlers.forEach((handler) => handler(ymap.get(key))));
 
   return {
-    // Return a subscriber function that handle the subscribers
-    // see https://svelte.dev/docs#Store_contract
     subscribe: (handler) => {
-      handler(ymap.get(key));
+      // When someone subscribe pass it the map value (or the initial value
+      // if the map is not already set) and add the subcriber function to the
+      // list of handlers
+      handler(ymap.has(key) ? ymap.get(key) : init);
       handlers.push(handler);
 
-      // Return an unsubscribe function that remove the subscribers from the list of subsribers
+      // Return the unsubscriber function
       return () => {
         const index = handlers.indexOf(handler);
         if (index !== -1) handlers.splice(index, 1);
-        // TODO: should we stop observing the ymap when no one is subscribing?
       };
     },
     set: (value) => ymap.set(key, value),
   };
 };
-
-// Get a Y.Map wrapped in a svelte store
-// export const getMapStore = (name) => {
-//   let handlers = [];
-//   let ymap = ydoc.getMap(name);
-
-//   ymap.observe(() => {
-//     handlers.forEach((handler) => handler(ymap));
-//   });
-
-//   return {
-//     subscribe: (handler) => {
-//       handler(ymap);
-//       handlers.push(handler);
-
-//       return () => {
-//         const index = handlers.indexOf(handler);
-//         if (index !== -1) handlers.splice(index, 1);
-//       };
-//     },
-//     set: (...args) => ymap.set(...args),
-//     has: (...args) => ymap.has(...args),
-//     get: (...args) => ymap.get(...args),
-//   };
-// };

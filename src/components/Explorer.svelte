@@ -73,7 +73,7 @@
       return;
     }
 
-    fileUrl.set(file.download_url);
+    $fileUrl = file.download_url;
     userState.send("STOP");
     correctChars.set(0);
     typedChars.set([]);
