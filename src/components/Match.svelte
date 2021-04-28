@@ -104,7 +104,8 @@
         (allReady, state) => allReady && state.ready,
         true
       );
-      if (allUsersReady && !matchStartsAt.get("time")) {
+      const onlyMe = [...awareness.getStates().values()].length == 1;
+      if (allUsersReady && !onlyMe && !matchStartsAt.get("time")) {
         matchStartsAt.set("time", Date.now() + 5000);
       }
     });
