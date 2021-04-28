@@ -189,6 +189,11 @@
     playersCursors = editor.deltaDecorations(playersCursors, ranges);
   };
 
+  // Reset players cursors
+  const removeCursors = () => {
+    playersCursors = editor.deltaDecorations(playersCursors, []);
+  };
+
   // Set editor position from local postion object
   const updateLocalPosition = () => {
     editor.setPosition($position);
@@ -240,6 +245,9 @@
 
   // Update remote players cursors
   $: editor && $players && updateCursors();
+
+  // When the match finishes remove pl;ayers cursors
+  $: editor && $userState.matches("online.finished") && removeCursors();
 
   // Update local editor position
   $: editor && $position && updateLocalPosition();
