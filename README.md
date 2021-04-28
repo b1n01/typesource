@@ -77,3 +77,11 @@ npm run build
 - Do we need to skip comments?
 - How to automaticly scroll the eidtor if the content the user is typing is after the middle of the edit viewport
 - Figure out which monaco features we need to make di build file smaller
+
+## Some design principles
+
+- The editor should be in the center of the page (horizontally)
+- All widgest can be hiddden while typing/racing
+- Metrics should be shown while racing/typing near the typing area
+- The line the user is typing should stay in the same position, the text
+  should move up so the user can keep its eyes fixed in one line
