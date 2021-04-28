@@ -6,7 +6,13 @@
   import { WebrtcProvider } from "y-webrtc";
   import { userState } from "../states";
   import { ydoc } from "../ystores";
-  import { position, players, fileUrl } from "../stores";
+  import {
+    position,
+    players,
+    fileUrl,
+    correctChars,
+    typedChars,
+  } from "../stores";
 
   const url = new URL(window.location.href); // the url
   let showCopyLabel = false; // wheter to show a confirmation for copying to clipboard
@@ -150,6 +156,12 @@
     userState.send("READY");
   };
 
+  const restartMatch = () => {
+    userState.send("RESTART");
+    $correctChars = 0;
+    $typedChars = [];
+  };
+
   // Todo remove this -----
   if (url.searchParams.has("uid")) {
     userId = url.searchParams.get("uid");
@@ -181,11 +193,9 @@
 
   // Set user as not ready when the match ends
   $: if ($userState.matches("online.finished")) {
-    console.log("Set user as not ready");
     awareness.setLocalStateField("ready", false);
     matchStartsAt.delete("time");
     countdown = null;
-    userState.send("RESTART");
   }
 
   // When the user is online and the file changes set as not ready
@@ -231,6 +241,8 @@
     <div class="mt-4">
       {#if $fileUrl && $userState.matches("online.lobby")}
         <Button label="I'm Ready" on:click={setUserAsReady} />
+      {:else if $userState.matches("online.finished")}
+        <Button label="Restart" on:click={restartMatch} />
       {:else}
         <Button label="I'm Ready" disabled />
       {/if}

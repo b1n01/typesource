@@ -200,12 +200,10 @@
     document.onkeydown = function (e) {
       // If the editor has focus and the key press is a navigation key
       // prevent default
-      console.log(e.code);
       if (
         editorRef.contains(document.activeElement) &&
         ["Space", "Tab", ""].includes(e.code)
       ) {
-        console.log("Prevent keyboard navigation");
         e.preventDefault();
       }
     };
