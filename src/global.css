@@ -11,8 +11,10 @@
 .cursor {
   width: 2px !important;
 }
-/* Define both background and corder-color to show the edito cursors 
-and the Live Players bubble*/
+/*
+Define both background and corder-color to show the editor cursors 
+and the Live Players bubble
+*/
 .cursor-1 {
   background: rgb(220, 70, 10);
   border-color: rgb(220, 70, 10);
@@ -24,4 +26,13 @@ and the Live Players bubble*/
 .cursor-3 {
   background: rgb(10, 210, 70);
   border-color: rgb(10, 210, 70);
+}
+
+/*
+Hide the "Cannot edito read-only editor" tooltip.
+Warning: this could hide unintended stuff and could be
+made useless by future Monaco releases
+*/
+.monaco-editor-overlaymessage {
+  display: none;
 }

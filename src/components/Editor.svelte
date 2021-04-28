@@ -52,10 +52,11 @@
   // Hide 'cannot edit in read-only editor' tooltip
   // see https://github.com/microsoft/monaco-editor/issues/1742#issuecomment-571908392
   const hideReadOnlyTooltip = () => {
-    const messageContribution = editor.getContribution(
-      "editor.contrib.messageController"
-    );
-    editor.onDidAttemptReadOnlyEdit(() => messageContribution.closeMessage());
+    // This is now hidden by global css rule because following method was not working
+    // const messageContribution = editor.getContribution(
+    //   "editor.contrib.messageController"
+    // );
+    // editor.onDidAttemptReadOnlyEdit(() => messageContribution.closeMessage());
   };
 
   // Reload custom font sizing when the font is fetched
@@ -195,9 +196,10 @@
     document.onkeydown = function (e) {
       // If the editor has focus and the key press is a navigation key
       // prevent default
+      console.log(e.code);
       if (
         editorRef.contains(document.activeElement) &&
-        ["Space", "Tab"].includes(e.code)
+        ["Space", "Tab", ""].includes(e.code)
       ) {
         console.log("Prevent keyboard navigation");
         e.preventDefault();
