@@ -102,15 +102,8 @@
       placeholder="Seach repositories"
       class="mt-4"
       readonly
-      value={search}
-    >
-      <img
-        slot="pre-icon"
-        src="images/search.svg"
-        alt="Search icon"
-        class="ml-2 w-4"
-      />
-    </Input>
+      value={$fileUrl.split("/").pop()}
+    />
   {:else}
     <Input
       bind:value={search}
