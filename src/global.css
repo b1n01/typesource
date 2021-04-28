@@ -20,3 +20,11 @@
 .cursor-3 {
   background: rgb(10, 210, 70);
 }
+
+/*
+Hide "Cannot edit in read-only editor" tooltip.
+WARNING: this could hide unintended stuff and could be made useless by future Monaco releases
+*/
+.monaco-editor-overlaymessage {
+    display: none;
+}
