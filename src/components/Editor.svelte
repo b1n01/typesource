@@ -108,7 +108,11 @@
   // Catch user keypress and check if the cursor should move
   const handleTyping = () => {
     editor.onKeyDown((e) => {
-      if (["offline.inactive", "offline.paused"].some($userState.matches)) {
+      if (
+        ["offline.inactive", "offline.paused", "offline.stopped"].some(
+          $userState.matches
+        )
+      ) {
         userState.send("START");
       }
 
