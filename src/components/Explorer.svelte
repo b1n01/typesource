@@ -97,99 +97,115 @@
 <main class="p-4 rounded bg-float text-white flex flex-col">
   <h1 class="font-bold">Search file on github repositories</h1>
 
-  <Input
-    bind:value={search}
-    on:input={debounce(handleSearch)}
-    placeholder="Seach repositories"
-    class="mt-4"
-  >
-    <img
-      slot="pre-icon"
-      src="images/search.svg"
-      alt="Search icon"
-      class="ml-2 w-4"
-    />
-  </Input>
-
-  {#if loading}
-    <span class="h-32 flex justify-center items-center">
-      <Loader />
-    </span>
+  {#if $userState.matches("online.playing")}
+    <Input
+      placeholder="Seach repositories"
+      class="mt-4"
+      readonly
+      value={search}
+    >
+      <img
+        slot="pre-icon"
+        src="images/search.svg"
+        alt="Search icon"
+        class="ml-2 w-4"
+      />
+    </Input>
   {:else}
-    {#if selectedRepo}
-      <!-- Breadcrumb -->
-      <div class="font-bold mt-4 ml-2">
-        <span
-          class="cursor-pointer hover:underline"
-          on:click={() => chageFolder("/")}
-        >
-          {selectedRepo.name}
-        </span>
-        {#each getRepoPath().split("/") as token, index}
+    <Input
+      bind:value={search}
+      on:input={debounce(handleSearch)}
+      placeholder="Seach repositories"
+      class="mt-4"
+    >
+      <img
+        slot="pre-icon"
+        src="images/search.svg"
+        alt="Search icon"
+        class="ml-2 w-4"
+      />
+    </Input>
+
+    {#if loading}
+      <span class="h-32 flex justify-center items-center">
+        <Loader />
+      </span>
+    {:else}
+      {#if selectedRepo}
+        <!-- Breadcrumb -->
+        <div class="font-bold mt-4 ml-2">
           <span
             class="cursor-pointer hover:underline"
-            on:click={() => {
-              // build the new path from the selected breadcrumb token
-              const path = getRepoPath()
-                .split("/")
-                .slice(0, index + 1)
-                .join("/");
-              chageFolder(path);
-            }}
+            on:click={() => chageFolder("/")}
           >
-            {token}
+            {selectedRepo.name}
           </span>
-          <span> / </span>
-        {/each}
-      </div>
-      <hr class="border-highlight mt-4" />
-    {/if}
-
-    {#if repos.length && !selectedRepo}
-      <!-- Repos list -->
-      <ul class="mt-4 max-h-64 overflow-y-auto">
-        {#each repos as repo}
-          <li>
-            <div
-              on:click={() => selectRepo(repo)}
-              class="flex p-2 hover:bg-highlight rounded cursor-pointer"
+          {#each getRepoPath().split("/") as token, index}
+            <span
+              class="cursor-pointer hover:underline"
+              on:click={() => {
+                // build the new path from the selected breadcrumb token
+                const path = getRepoPath()
+                  .split("/")
+                  .slice(0, index + 1)
+                  .join("/");
+                chageFolder(path);
+              }}
             >
-              {repo.full_name}
-            </div>
-          </li>
-          <li />{/each}
-      </ul>
-    {/if}
+              {token}
+            </span>
+            <span> / </span>
+          {/each}
+        </div>
+        <hr class="border-highlight mt-4" />
+      {/if}
 
-    {#if files.length}
-      <!-- File list -->
-      <ul class="mt-4 max-h-64 overflow-y-auto">
-        {#if repoCurrentUrl !== repoBaseUrl}
-          <li on:click={goToParentFolder}>
-            <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
-              ☝
-              <span class="pl-4">Back to parent folder</span>
-            </div>
-          </li>
-        {/if}
-        {#each files as file}
-          {#if file.type == "file"}
-            <li on:click={() => selectFile(file)}>
-              <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
-                📄
-                <span class="pl-4">{file.name}</span>
+      {#if repos.length && !selectedRepo}
+        <!-- Repos list -->
+        <ul class="mt-4 max-h-64 overflow-y-auto">
+          {#each repos as repo}
+            <li>
+              <div
+                on:click={() => selectRepo(repo)}
+                class="flex p-2 hover:bg-highlight rounded cursor-pointer"
+              >
+                {repo.full_name}
               </div>
             </li>
-          {:else}
-            <li on:click={() => chageFolder("/" + file.path)}>
+            <li />{/each}
+        </ul>
+      {/if}
+
+      {#if files.length}
+        <!-- File list -->
+        <ul class="mt-4 max-h-64 overflow-y-auto">
+          {#if repoCurrentUrl !== repoBaseUrl}
+            <li on:click={goToParentFolder}>
               <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
-                📁
-                <span class="pl-4">{file.name}</span>
+                ☝
+                <span class="pl-4">Back to parent folder</span>
               </div>
             </li>
           {/if}
-        {/each}
-      </ul>
+          {#each files as file}
+            {#if file.type == "file"}
+              <li on:click={() => selectFile(file)}>
+                <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
+                  📄
+                  <span class="pl-4">{file.name}</span>
+                </div>
+              </li>
+            {:else}
+              <li on:click={() => chageFolder("/" + file.path)}>
+                <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
+                  📁
+                  <span class="pl-4">{file.name}</span>
+                </div>
+              </li>
+            {/if}
+          {/each}
+        </ul>
+      {/if}
     {/if}
   {/if}
 </main>
