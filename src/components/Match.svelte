@@ -156,10 +156,28 @@
     userState.send("READY");
   };
 
+  // Reset collected metrics and restart the mathc
   const restartMatch = () => {
     userState.send("RESTART");
     $correctChars = 0;
     $typedChars = [];
+  };
+
+  // Get wheter the user has won the last match
+  const didUserWon = () => {
+    const winnerPos = $players.reduce(
+      (winnerPos, player) =>
+        player.position.lineNumber > winnerPos.lineNumber &&
+        player.position.column > winnerPos.column
+          ? player.position
+          : winnewPos,
+      { lineNumber: 0, column: 0 }
+    );
+
+    return (
+      $position.lineNumber >= winnerPos.lineNumber &&
+      $position.column >= winnerPos.column
+    );
   };
 
   // Todo remove this -----
@@ -247,9 +265,19 @@
         <Button label="I'm Ready" disabled />
       {/if}
 
-      {#if countdown}
-        <span class="ml-4">Match starting in {countdown}</span>
-      {/if}
+      <span class="ml-4">
+        {#if $userState.matches("online.ready.countdown")}
+          Match starting in {countdown}
+        {:else if $userState.matches("online.ready.waiting")}
+          Wait for other players
+        {:else if $userState.matches("online.playing")}
+          GO!
+        {:else if $userState.matches("online.finished")}
+          The match is over, {didUserWon() ? "you won!" : "you lost"}
+        {:else if $userState.matches("online.lobby")}
+          Prepare yourself
+        {/if}
+      </span>
     </div>
 
     {#if $players.length}
