@@ -88,7 +88,11 @@
       );
 
       // Set local position as last updated 'shared position'
-      if (["online.lobby", "online.ready"].some($userState.matches)) {
+      if (
+        ["online.lobby", "online.ready.waiting", "online.finished"].some(
+          $userState.matches
+        )
+      ) {
         let clients = [...changes.updated].filter((id) => id != clientId); // remove myself
         if (clients.length) {
           const updatedClientId = Math.max(clients); // If more than one client has changed keep the one with bigger id
