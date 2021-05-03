@@ -12,18 +12,20 @@
   } from "../stores";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
+  import { user } from "../stores";
 
   let show = false;
   const toggle = () => (show = !show);
 </script>
 
 <section
-  class="text-white bg-gray-900 p-2 fixed bottom-2 right-2 text-sm max-w-xs"
+  class="text-white bg-gray-900 p-2 fixed bottom-6 right-2 text-sm max-w-xs"
 >
   {#if show}
     <p class="flex justify-between cursor-pointer pb-2" on:click={toggle}>
       Debug<span>❌</span>
     </p>
+    <p>uid: {$user?.uid || ""}</p>
     <p>file: {$fileUrl.split("/").pop() || ""}</p>
     <p>lang: {getLanguageFromUrl($fileUrl)}</p>
     <p>editor state: {JSON.stringify($userState.value)}</p>

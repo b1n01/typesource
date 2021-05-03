@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 import { getStore } from "./ystores";
+import { getUser } from "./firebase";
 
 // Editor
 export const typedChars = writable([]); // all the characters typed in this session
@@ -20,3 +21,7 @@ export const players = writable([]); // the states of remote players
 
 // The url of the selected file
 export const fileUrl = getStore("file", "");
+
+// Auth
+export const user = getUser(); // the logged in user (null if not logged)
+export const userReady = writable(false); // whether we have checked if the user is logged in
