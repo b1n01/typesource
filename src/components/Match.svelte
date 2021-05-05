@@ -12,6 +12,7 @@
     fileUrl,
     correctChars,
     typedChars,
+    user,
   } from "../stores";
 
   const url = new URL(window.location.href); // the url
@@ -21,9 +22,6 @@
   let awareness; // keeps all connected players states
   let matchStartsAt = ydoc.getMap("matchStart");
   let countdown; // how many seconds until the match starts
-
-  // TODO remove this
-  let userId;
 
   // Check if the match should start and the timer should be showed
   const handleMatchStart = (e) => {
@@ -71,7 +69,7 @@
   // Set initial user state
   const initAwareness = () => {
     awareness.setLocalState({
-      uid: userId,
+      uid: $user.uid,
       position: $position,
     });
   };
@@ -83,7 +81,8 @@
 
       // Update players cursor
       $players = [...awareness.getStates().values()].reduce(
-        (states, state) => (state.uid != userId ? [...states, state] : states),
+        (states, state) =>
+          state.uid != $user.uid ? [...states, state] : states,
         []
       );
 
@@ -140,7 +139,6 @@
     roomKey = null;
     updateUrlRoomKey();
     awareness.destroy();
-    // ydoc.destroy();
     userState.send("OFFLINE");
   };
 
@@ -185,19 +183,17 @@
     );
   };
 
-  // Todo remove this -----
-  if (url.searchParams.has("uid")) {
-    userId = url.searchParams.get("uid");
-  } else {
-    userId = Math.random().toString(36).substring(7);
-    url.searchParams.set("uid", userId);
-    window.history.pushState({ path: url.href }, "", url.href);
-  }
-  // ---------------------
-
   // If the `r` param is set join the room
   if (url.searchParams.has("r")) {
     roomKey = url.searchParams.get("r");
+    if ($user) {
+      joinRoom(roomKey);
+    }
+  }
+
+  // Join room if we have a room key, a logged user and we are offline
+  $: if ($user && roomKey && $userState.matches("offline")) {
+    console.log("Joining the room");
     joinRoom(roomKey);
   }
 
@@ -231,7 +227,9 @@
 <div class="p-4 rounded bg-float text-white flex flex-col">
   <h1 class="font-bold">Room</h1>
 
-  {#if !roomKey}
+  {#if !$user}
+    <p class="mt-1">Signin to create a room</p>
+  {:else if !roomKey}
     <Button label="Create a room" class="mt-4" on:click={createRoom} />
   {:else}
     <div class="flex mt-4">
