@@ -9,7 +9,7 @@
     <h1 class="text-2xl p-4">Typesource</h1>
     <ul class="ml-auto self-center flex">
       {#if $userReady}
-        {#if $user}
+        {#if $user && !$user.isAnonymous}
           <li class="pl-2 cursor-pointer" on:click={logout}>Logout</li>
         {:else}
           <li class="cursor-pointer" on:click={login}>Signin</li>

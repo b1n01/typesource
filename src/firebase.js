@@ -4,8 +4,11 @@ import {
   getAuth,
   useAuthEmulator,
   GithubAuthProvider,
+  linkWithCredential,
   signInWithPopup,
   signOut,
+  signInAnonymously,
+  linkWithPopup,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -46,6 +49,14 @@ const getUser = () => {
     userReady.set(true);
     user = user;
     handlers.forEach((handler) => handler(user));
+
+    console.log(user);
+    if (user == null) {
+      console.log("Signing in anonimously");
+      signInAnonymously(auth);
+      // .then() // todo handle response
+      // .catch();
+    }
   });
 
   return {
@@ -65,9 +76,11 @@ const getUser = () => {
 // Function to login/signup an user via Github
 const login = () => {
   const provider = new GithubAuthProvider();
-  signInWithPopup(auth, provider)
+
+  linkWithPopup(auth.currentUser, provider)
     .then(async (response) => {
       const credential = GithubAuthProvider.credentialFromResult(response);
+
       const accessToken = credential.accessToken;
       const user = response.user;
 
@@ -98,9 +111,9 @@ const login = () => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
-      const email = error.email;
-      const credential = GithubAuthProvider.credentialFromError(error);
-      console.error(errorCode, errorMessage, email, credential);
+      // const email = error.email;
+      // const credential = GithubAuthProvider.credentialFromError(error);
+      console.error(errorCode, errorMessage);
     });
 };
 

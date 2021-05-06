@@ -193,7 +193,6 @@
 
   // Join room if we have a room key, a logged user and we are offline
   $: if ($user && roomKey && $userState.matches("offline")) {
-    console.log("Joining the room");
     joinRoom(roomKey);
   }
 
@@ -227,7 +226,7 @@
 <div class="p-4 rounded bg-float text-white flex flex-col">
   <h1 class="font-bold">Room</h1>
 
-  {#if !$user}
+  {#if !$user || $user.isAnonymous}
     <p class="mt-1">Signin to create a room</p>
   {:else if !roomKey}
     <Button label="Create a room" class="mt-4" on:click={createRoom} />
