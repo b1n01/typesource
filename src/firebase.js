@@ -1,14 +1,13 @@
-import { userReady } from "./stores";
+import { userReady, user } from "./stores";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
   useAuthEmulator,
   GithubAuthProvider,
-  linkWithCredential,
-  signInWithPopup,
   signOut,
   signInAnonymously,
   linkWithPopup,
+  signInWithCredential,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -46,13 +45,13 @@ const getUser = () => {
 
   // Update all handlers whith logged in user
   auth.onAuthStateChanged((user) => {
+    console.log("AuthStateChanded", user);
     userReady.set(true);
     user = user;
     handlers.forEach((handler) => handler(user));
 
-    console.log(user);
     if (user == null) {
-      console.log("Signing in anonimously");
+      console.log("SignAnonymously");
       signInAnonymously(auth);
       // .then() // todo handle response
       // .catch();
@@ -70,7 +69,45 @@ const getUser = () => {
         if (index !== -1) handlers.splice(index, 1);
       };
     },
+    set: (newUser) => {
+      user = newUser;
+      handlers.forEach((handler) => handler(user));
+    },
   };
+};
+
+// Handle user signin
+const hanldeSignIn = async (response) => {
+  console.log("Handling signin");
+  const credential = GithubAuthProvider.credentialFromResult(response);
+
+  const accessToken = credential.accessToken;
+  const loggedUser = response.user;
+  user.set(loggedUser);
+
+  const users = collection(db, "users");
+  const select = query(users, where("uid", "==", loggedUser.uid));
+  const result = await getDocs(select);
+
+  if (result.empty) {
+    try {
+      await addDoc(users, {
+        accessToken: accessToken,
+        uid: loggedUser.uid,
+      });
+    } catch (e) {
+      console.error("Error adding user access token ", e);
+    }
+  } else {
+    try {
+      const loggedUser = result.docs[0];
+      await updateDoc(loggedUser.ref, {
+        accessToken: accessToken,
+      });
+    } catch (e) {
+      console.error("Error updating user access token ", e);
+    }
+  }
 };
 
 // Function to login/signup an user via Github
@@ -78,42 +115,19 @@ const login = () => {
   const provider = new GithubAuthProvider();
 
   linkWithPopup(auth.currentUser, provider)
-    .then(async (response) => {
-      const credential = GithubAuthProvider.credentialFromResult(response);
-
-      const accessToken = credential.accessToken;
-      const user = response.user;
-
-      const users = collection(db, "users");
-      const select = query(users, where("uid", "==", user.uid));
-      const result = await getDocs(select);
-
-      if (result.empty) {
-        try {
-          await addDoc(users, {
-            accessToken: accessToken,
-            uid: user.uid,
-          });
-        } catch (e) {
-          console.error("Error adding user access token ", e);
-        }
-      } else {
-        try {
-          const user = result.docs[0];
-          await updateDoc(user.ref, {
-            accessToken: accessToken,
-          });
-        } catch (e) {
-          console.error("Error updating user access token ", e);
-        }
-      }
-    })
+    .then(hanldeSignIn)
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // const email = error.email;
-      // const credential = GithubAuthProvider.credentialFromError(error);
-      console.error(errorCode, errorMessage);
+      console.error("Error while linking anon. account", error.message);
+
+      if (error.code === "auth/credential-already-in-use") {
+        console.log("Try loggin in with old account");
+        const credential = GithubAuthProvider.credentialFromError(error);
+        signInWithCredential(auth, credential)
+          .then(hanldeSignIn)
+          .catch((error) => {
+            console.error("Error while signin in", error.message);
+          });
+      }
     });
 };
 
