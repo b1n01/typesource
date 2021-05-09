@@ -1,5 +1,15 @@
 import { get } from "svelte/store";
-import { typedChars, correctChars, elapsed, wpm, accuracy } from "./stores";
+import {
+  typedChars,
+  correctChars,
+  elapsed,
+  rounds,
+  wpm,
+  accuracy,
+  user,
+} from "./stores";
+import { db } from "./firebase";
+import { serverTimestamp, collection, addDoc } from "firebase/firestore";
 
 export const init = () => {
   // Update accuracy when a character is typed
@@ -18,5 +28,25 @@ export const init = () => {
     } else {
       wpm.set(null);
     }
+  });
+
+  // Reset metrics on every round
+  rounds.subscribe(() => {
+    // Store match results
+    if (get(user)) {
+      const metrics = {
+        wpm: get(wpm),
+        accuracy: get(accuracy),
+        typedChars: get(typedChars),
+        correctChars: get(correctChars),
+        uid: get(user).uid,
+        timestamp: serverTimestamp(),
+      };
+      addDoc(collection(db, "metrics"), metrics);
+    }
+
+    // Reset metrics
+    correctChars.set(0);
+    typedChars.set([]);
   });
 };
