@@ -44,14 +44,13 @@ const getUser = () => {
   let user = null;
 
   // Update all handlers whith logged in user
-  auth.onAuthStateChanged((user) => {
-    console.log("AuthStateChanded", user);
+  auth.onAuthStateChanged((newUser) => {
+    console.log("AuthStateChanded", newUser);
     userReady.set(true);
-    user = user;
+    user = newUser;
     handlers.forEach((handler) => handler(user));
 
     if (user == null) {
-      console.log("SignAnonymously");
       signInAnonymously(auth);
       // .then() // todo handle response
       // .catch();
@@ -78,7 +77,6 @@ const getUser = () => {
 
 // Handle user signin
 const hanldeSignIn = async (response) => {
-  console.log("Handling signin");
   const credential = GithubAuthProvider.credentialFromResult(response);
 
   const accessToken = credential.accessToken;
