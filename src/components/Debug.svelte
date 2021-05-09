@@ -4,15 +4,16 @@
     elapsed,
     correctChars,
     typedChars,
+    rounds,
     wpm,
     accuracy,
     position,
     players,
     fileUrl,
+    user,
   } from "../stores";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
-  import { user } from "../stores";
 
   let show = false;
   const toggle = () => (show = !show);
@@ -35,6 +36,7 @@
     <p>correct chars: {$correctChars}</p>
     <p>accuracy: {$accuracy}</p>
     <p>wpm: {$wpm}</p>
+    <p>rounds: {$rounds}</p>
     <p>position: {$position.lineNumber}:{$position.column}</p>
     <p>
       players: {$players.map(

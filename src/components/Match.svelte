@@ -38,7 +38,7 @@
       userState.send("COUNTDOWN");
       setTimeout(setCountdown, 1000);
 
-      // Staring the match
+      // Staring the match when the countdown is over
       setTimeout(() => {
         userState.send("GO");
       }, countdown * 1000);

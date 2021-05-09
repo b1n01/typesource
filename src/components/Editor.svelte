@@ -108,6 +108,8 @@
   // Catch user keypress and check if the cursor should move
   const handleTyping = () => {
     editor.onKeyDown((e) => {
+      const typedKey = e.browserEvent.key; // typed key
+
       if (
         ["offline.inactive", "offline.paused", "offline.stopped"].some(
           $userState.matches
@@ -121,7 +123,7 @@
       }
 
       // Update typed characters
-      typedChars.update((n) => n + 1);
+      $typedChars = [...$typedChars, typedKey];
 
       // Find out next character
       let nextChar = editor.getModel().getValueInRange({
@@ -132,7 +134,7 @@
       });
 
       // If the user typed the correct character move one position to the right
-      if (nextChar === e.browserEvent.key) {
+      if (nextChar === typedKey) {
         $position.column++;
         editor.setPosition($position);
         updateDecoration();
@@ -141,7 +143,7 @@
 
       // If we are at the end of the line and the Enter is pressed
       // than go on next line
-      if (!nextChar && e.browserEvent.key === "Enter") {
+      if (!nextChar && typedKey === "Enter") {
         $position.lineNumber++;
 
         // Find out first non whitespace position on next line
