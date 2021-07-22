@@ -36,3 +36,11 @@ made useless by future Monaco releases
 .monaco-editor-overlaymessage {
   display: none;
 }
+
+/*
+Hide "Cannot edit in read-only editor" tooltip.
+WARNING: this could hide unintended stuff and could be made useless by future Monaco releases
+*/
+.monaco-editor-overlaymessage {
+    display: none;
+}
