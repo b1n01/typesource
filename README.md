@@ -18,6 +18,12 @@ Then start webpack dev server:
 npm run dev
 ```
 
+And start the Firebase local emulator:
+
+```bash
+firebase emulators:start
+```
+
 Finally navigate to [localhost:8080](http://localhost:8080).
 
 ### Tailwind
@@ -26,6 +32,16 @@ This projects uses [Tailwind](https://tailwindcss.com/), it is cofigured in `tai
 
 Install the [Tailwind Intellisess](https://tailwindcss.com/docs/intellisense) vscode extention and set the vscode config `"editor.quickSuggestions": true` to enable autosuggestion (see [github issue](https://github.com/tailwindlabs/tailwindcss-intellisense/issues/151#issuecomment-684684682))
 
+### Firebase
+
+Firebase is used as db with [Firestore](https://firebase.google.com/docs/firestore) and as aith system with [Auth](https://firebase.google.com/docs/auth). You can start local emulators with:
+
+```bash
+firebase emulators:start
+```
+
+You can find the mulator UI at [localhost:4000](http://localhost:4000).
+
 ## Build
 
 To create a production build just run:
@@ -33,6 +49,12 @@ To create a production build just run:
 ```bash
 npm run build
 ```
+
+## Branches
+
+- The "main" branch keeps the up to date code
+- The "prod" branch keeps the production reary code (automatically deployed with netlify)
+- Other features should go in "feature/new-thing"
 
 ## Requirements
 
