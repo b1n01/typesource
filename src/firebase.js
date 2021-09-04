@@ -2,7 +2,7 @@ import { userReady, user } from "./stores";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
-  useAuthEmulator,
+  connectAuthEmulator,
   GithubAuthProvider,
   signOut,
   signInAnonymously,
@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import {
   getFirestore,
-  useFirestoreEmulator,
+  connectFirestoreEmulator,
   collection,
   query,
   where,
@@ -32,11 +32,13 @@ const firebase = initializeApp({
 
 // Init firestore db and setup local emulator
 const db = getFirestore();
-useFirestoreEmulator(db, "localhost", 9991);
+// TODO: how to remove this in prodution?
+connectFirestoreEmulator(db, "localhost", 9991);
 
 // Initialize the auth and setup the emulator
 const auth = getAuth();
-useAuthEmulator(auth, "http://localhost:9990");
+// TODO: how to remove this in prodution?
+connectAuthEmulator(auth, "http://localhost:9990");
 
 // Wrap the Firebase auth user in a Svelte store
 const getUser = () => {
@@ -45,7 +47,7 @@ const getUser = () => {
 
   // Update all handlers whith logged in user
   auth.onAuthStateChanged((newUser) => {
-    console.log("AuthStateChanded", newUser);
+    // console.log("AuthStateChanded", newUser);
     userReady.set(true);
     user = newUser;
     handlers.forEach((handler) => handler(user));
@@ -77,6 +79,7 @@ const getUser = () => {
 
 // Handle user signin
 const hanldeSignIn = async (response) => {
+  // console.log("handling sign in");
   const credential = GithubAuthProvider.credentialFromResult(response);
 
   const accessToken = credential.accessToken;
