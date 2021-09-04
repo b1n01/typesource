@@ -47,7 +47,7 @@
       // Finish the match
       setTimeout(() => {
         userState.send("END");
-      }, countdown * 1000 + 10 * 1000); // 10 seconds match
+      }, countdown * 1000 + 8 * 1000); // 10 seconds match
     }
   };
 
@@ -142,7 +142,7 @@
     userState.send("OFFLINE");
   };
 
-  // GEt the url of the current room
+  // Get the url of the current room
   const getRoomUrl = () => url.origin + `?r=${roomKey}`;
 
   // Copy a value to the clipboard
@@ -159,7 +159,7 @@
     userState.send("READY");
   };
 
-  // Reset collected metrics and restart the mathc
+  // Reset collected metrics and restart the match
   const restartMatch = () => {
     userState.send("RESTART");
     $correctChars = 0;
@@ -186,12 +186,14 @@
   // If the `r` param is set join the room
   if (url.searchParams.has("r")) {
     roomKey = url.searchParams.get("r");
+    // TODO: isn't the user always logged (anonimously)?
     if ($user) {
       joinRoom(roomKey);
     }
   }
 
   // Join room if we have a room key, a logged user and we are offline
+  // TODO: isn't the user always logged (anonimously)?
   $: if ($user && roomKey && $userState.matches("offline")) {
     joinRoom(roomKey);
   }
@@ -217,6 +219,7 @@
   }
 
   // When the user is online and the file changes set as not ready
+  // Isn't this not allwed in Explorer.svlete:72
   $: if ($fileUrl && awareness) {
     awareness.setLocalStateField("ready", false);
     userState.send("STOP");
@@ -289,9 +292,7 @@
           <div
             title="{player.uid} is {player.ready ? 'ready' : 'not ready'}"
             class="bg-gray-100 border-4 rounded-full w-8 h-8 mr-2 mb-2 cursor-pointer
-            {player.ready
-              ? 'opacity-100'
-              : 'opacity-30'} cursor-{(i % 3) + 1}"
+            {player.ready ? 'opacity-100' : 'opacity-30'} cursor-{(i % 3) + 1}"
           />
         {/each}
       </div>

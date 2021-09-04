@@ -13,9 +13,9 @@
   import monacoConfig from "../monaco.config";
 
   let editor = null; // the editor
-  let decorations = []; // decoration to gray out the content not already
+  let decorations = []; // decoration to gray out the content not already typed
   let playersCursors = []; // decoration to show remote players position
-  let editorRef = null; //Reference to the editor div
+  let editorRef = null; // reference to the editor div
 
   // Reset position to 1, 1
   const resetPosition = () => ($position = { lineNumber: 1, column: 1 });
@@ -29,9 +29,9 @@
     );
   };
 
-  // This function updatedes the decoration with the local position(grayed out text)
-  const updateDecoration = () => {
-    setDecoration($position.lineNumber, $position.column, 1000, 1000);
+  // This function updates the decoration with the local position(grayed out text)
+  const updateDecoration = (position) => {
+    setDecoration(position.lineNumber, position.column, 1000, 1000);
   };
 
   // Remove decoration (grayed out text)
@@ -137,8 +137,8 @@
       if (nextChar === typedKey) {
         $position.column++;
         editor.setPosition($position);
-        updateDecoration();
-        correctChars.update((n) => n + 1);
+        updateDecoration($position);
+        $correctChars = $correctChars + 1;
       }
 
       // If we are at the end of the line and the Enter is pressed
@@ -147,7 +147,7 @@
         $position.lineNumber++;
 
         // Find out first non whitespace position on next line
-        let lineText = editor.getModel().getLineContent(position.lineNumber);
+        let lineText = editor.getModel().getLineContent($position.lineNumber);
         let firstNotWhiteSpace = lineText.match(/\S/);
         let culumn = firstNotWhiteSpace ? firstNotWhiteSpace.index : 0;
         $position.column = culumn + 1;
@@ -174,7 +174,7 @@
     }
   };
 
-  // Draw cursor decoration
+  // Draw cursor decoration for online players
   const updateCursors = () => {
     if (!$userState.matches("online.playing")) return;
 
@@ -196,7 +196,7 @@
     playersCursors = editor.deltaDecorations(playersCursors, []);
   };
 
-  // Set editor position from local postion object
+  // Set editor position from local position object
   const updateLocalPosition = () => {
     editor.setPosition($position);
   };
@@ -255,7 +255,10 @@
   $: editor && $position && updateLocalPosition();
 
   // Update the editor decoration (gray text)
-  $: editor && $userState.matches("online.playing") && updateDecoration();
+  // (the offline decoration is triggered by a keypress)
+  $: editor &&
+    $userState.matches("online.playing") &&
+    updateDecoration($position);
 
   // Reset decoration (gray text) when the match finishes
   $: editor && $userState.matches("online.finished") && removeDecoration();

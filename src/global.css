@@ -29,7 +29,7 @@ and the Live Players bubble
 }
 
 /*
-Hide the "Cannot edito read-only editor" tooltip.
+Hide the "Cannot edit read-only editor" tooltip.
 Warning: this could hide unintended stuff and could be
 made useless by future Monaco releases
 */
@@ -42,5 +42,5 @@ Hide "Cannot edit in read-only editor" tooltip.
 WARNING: this could hide unintended stuff and could be made useless by future Monaco releases
 */
 .monaco-editor-overlaymessage {
-    display: none;
+  display: none;
 }

@@ -4,6 +4,7 @@ import { userState } from "./states";
 
 const round = 8; // how many seconds in a round
 
+// TODO: check the timer format
 // Update timer (`00:00`) with the new elapsed time since last session start
 const updateTimer = () => {
   let time = get(elapsed) + 1;

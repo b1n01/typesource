@@ -68,7 +68,7 @@
 
   // Select a file
   const selectFile = (file) => {
-    // Prevent the user for sweelecting a different file if is ready or playing
+    // Prevent the user for selecting a different file if is ready or playing
     if (["online.playing", "online.ready"].some($userState.matches)) {
       return;
     }
