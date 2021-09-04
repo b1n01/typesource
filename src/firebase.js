@@ -32,13 +32,15 @@ const firebase = initializeApp({
 
 // Init firestore db and setup local emulator
 const db = getFirestore();
-// TODO: how to remove this in prodution?
-connectFirestoreEmulator(db, "localhost", 9991);
+if (process.env.NODE_ENV === "development") {
+  connectFirestoreEmulator(db, "localhost", 9991);
+}
 
 // Initialize the auth and setup the emulator
 const auth = getAuth();
-// TODO: how to remove this in prodution?
-connectAuthEmulator(auth, "http://localhost:9990");
+if (process.env.NODE_ENV === "development") {
+  connectAuthEmulator(auth, "http://localhost:9990");
+}
 
 // Wrap the Firebase auth user in a Svelte store
 const getUser = () => {
