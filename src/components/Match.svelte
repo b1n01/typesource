@@ -24,7 +24,7 @@
   let countdown; // how many seconds until the match starts
 
   // Check if the match should start and the timer should be showed
-  const handleMatchStart = (e) => {
+  const handleMatchStart = () => {
     if (matchStartsAt.has("time")) {
       countdown = Math.ceil((matchStartsAt.get("time") - Date.now()) / 1000);
 
@@ -43,7 +43,6 @@
         userState.send("GO");
       }, countdown * 1000);
 
-      // TODO handle this in a better way
       // Finish the match
       setTimeout(() => {
         userState.send("END");
@@ -186,14 +185,12 @@
   // If the `r` param is set join the room
   if (url.searchParams.has("r")) {
     roomKey = url.searchParams.get("r");
-    // TODO: isn't the user always logged (anonimously)?
     if ($user) {
       joinRoom(roomKey);
     }
   }
 
   // Join room if we have a room key, a logged user and we are offline
-  // TODO: isn't the user always logged (anonimously)?
   $: if ($user && roomKey && $userState.matches("offline")) {
     joinRoom(roomKey);
   }

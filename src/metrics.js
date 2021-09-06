@@ -33,7 +33,7 @@ export const init = () => {
   // Reset metrics on every round
   rounds.subscribe(() => {
     // Store match results
-    // TODO: the user is always logged in (consider anonymous mode)
+    // This check is required because on first subscription to 'rounds' the user could be not available yet
     if (get(user)) {
       const metrics = {
         wpm: get(wpm),
