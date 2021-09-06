@@ -49,15 +49,14 @@ const getUser = () => {
 
   // Update all handlers whith logged in user
   auth.onAuthStateChanged((newUser) => {
-    // console.log("AuthStateChanded", newUser);
     userReady.set(true);
     user = newUser;
     handlers.forEach((handler) => handler(user));
 
     if (user == null) {
-      signInAnonymously(auth);
-      // .then() // todo handle response
-      // .catch();
+      signInAnonymously(auth).catch((e) =>
+        console.error("Error while logging in the user anonymously.", e)
+      );
     }
   });
 
@@ -81,7 +80,6 @@ const getUser = () => {
 
 // Handle user signin
 const hanldeSignIn = async (response) => {
-  // console.log("handling sign in");
   const credential = GithubAuthProvider.credentialFromResult(response);
 
   const accessToken = credential.accessToken;
@@ -99,7 +97,7 @@ const hanldeSignIn = async (response) => {
         uid: loggedUser.uid,
       });
     } catch (e) {
-      console.error("Error adding user access token ", e);
+      console.error("Error adding user access token.", e);
     }
   } else {
     try {
@@ -108,7 +106,7 @@ const hanldeSignIn = async (response) => {
         accessToken: accessToken,
       });
     } catch (e) {
-      console.error("Error updating user access token ", e);
+      console.error("Error updating user access token.", e);
     }
   }
 };
@@ -119,16 +117,15 @@ const login = () => {
 
   linkWithPopup(auth.currentUser, provider)
     .then(hanldeSignIn)
-    .catch((error) => {
-      console.error("Error while linking anon. account", error.message);
+    .catch((e) => {
+      console.error("Error while linking anon. account.", e);
 
       if (error.code === "auth/credential-already-in-use") {
-        console.log("Try loggin in with old account");
-        const credential = GithubAuthProvider.credentialFromError(error);
+        const credential = GithubAuthProvider.credentialFromError(e);
         signInWithCredential(auth, credential)
           .then(hanldeSignIn)
-          .catch((error) => {
-            console.error("Error while signin in", error.message);
+          .catch((e) => {
+            console.error("Error while signin in.", e);
           });
       }
     });
