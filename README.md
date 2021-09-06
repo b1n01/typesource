@@ -56,6 +56,8 @@ npm run build
 - The "prod" branch keeps the production reary code (automatically deployed with netlify)
 - Other features should go in "feature/new-thing"
 
+---
+
 ## Requirements
 
 - We want a web app
@@ -66,7 +68,6 @@ npm run build
 - The user can navigate on repos folder structure (visit folder and go back)
 - The user can pick a file
 - The picked file will be displayed on the editor as a "preview"
-- The user can select
 - The user can select from which line the typing expiriece will start
 - Three way to select where the text the user has to type ends:
   - The user can select a line where the range ends
@@ -87,18 +88,6 @@ npm run build
 - Match making with strangers
 - The user can create a room on a selected file, other player can search "active" room by languges
   and join the room without manually sharing the invitation token
-
-### Todo
-
-- Handle Github rest api rate limit for non authenticated users
-- Should we use [https://github.com/octokit/rest.js](https://github.com/octokit/rest.js)
-- Restore 'MiniCssExtractPlugin' webpack plugin
-- Install tainwins css (with webpack)
-- Monaco editor is not working with webpack live reload
-- When a type spacebar the page scrolls down because the editor is on readOnly mode and the editor is not "focusable"
-- Do we need to skip comments?
-- How to automaticly scroll the eidtor if the content the user is typing is after the middle of the edit viewport
-- Figure out which monaco features we need to make di build file smaller
 
 ## Some design principles
 
