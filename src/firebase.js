@@ -120,7 +120,7 @@ const login = () => {
     .catch((e) => {
       console.error("Error while linking anon. account.", e);
 
-      if (error.code === "auth/credential-already-in-use") {
+      if (e.code === "auth/credential-already-in-use") {
         const credential = GithubAuthProvider.credentialFromError(e);
         signInWithCredential(auth, credential)
           .then(hanldeSignIn)
