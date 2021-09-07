@@ -32,13 +32,13 @@ const firebase = initializeApp({
 
 // Init firestore db and setup local emulator
 const db = getFirestore();
-if (process.env.NODE_ENV === "development") {
-  connectFirestoreEmulator(db, "localhost", 9991);
-}
 
 // Initialize the auth and setup the emulator
 const auth = getAuth();
+
+// Spin up emulators while developing
 if (process.env.NODE_ENV === "development") {
+  connectFirestoreEmulator(db, "localhost", 9991);
   connectAuthEmulator(auth, "http://localhost:9990");
 }
 
