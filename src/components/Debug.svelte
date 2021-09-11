@@ -14,6 +14,7 @@
   } from "../stores";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
+  import { seedDB } from "../seeder.js";
 
   let show = false;
   const toggle = () => (show = !show);
@@ -43,6 +44,17 @@
         (p) => `[${p.position.lineNumber}:${p.position.column}]`
       )}
     </p>
+
+    <p class="flex justify-between cursor-pointer pb-2 pt-2">Actions</p>
+    {#if $user && !$user.isAnonymous}
+      <button class="bg-gray-300 rounded px-2 text-black" on:click={seedDB}
+        >Seed DB</button
+      >
+    {:else}
+      <button class="bg-gray-600 rounded px-2 text-gray-800 cursor-default"
+        >Seed DB</button
+      >
+    {/if}
   {:else}
     <p class="cursor-pointer" on:click={toggle}>
       Debug<span class="ml-4">⬆️</span>
