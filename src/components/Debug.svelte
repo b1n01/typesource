@@ -47,13 +47,13 @@
 
     <p class="flex justify-between cursor-pointer pb-2 pt-2">Actions</p>
     {#if $user && !$user.isAnonymous}
-      <button class="bg-gray-300 rounded px-2 text-black" on:click={seedDB}
-        >Seed DB</button
-      >
+      <button class="bg-gray-300 rounded px-2 text-black" on:click={seedDB}>
+        Seed DB
+      </button>
     {:else}
-      <button class="bg-gray-600 rounded px-2 text-gray-800 cursor-default"
-        >Seed DB</button
-      >
+      <button class="bg-gray-600 rounded px-2 text-gray-800 cursor-default">
+        Seed DB
+      </button>
     {/if}
   {:else}
     <p class="cursor-pointer" on:click={toggle}>
