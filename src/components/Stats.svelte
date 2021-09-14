@@ -13,6 +13,8 @@
   let todaySessions = 0;
   let todayAvgWpm = 0;
   let todayAvgAccuracy = 0;
+  let todayData = [];
+  let totalData = [];
 
   user.subscribe(async () => {
     if ($user) {
@@ -54,6 +56,18 @@
         todayAvgAccuracy = Math.round(todayAccuracy / todaySessions);
       }
 
+      todayData = [
+        { label: "Today sessions", content: todaySessions },
+        { label: "Today wpm", content: todayAvgWpm },
+        { label: "Today accuracy", content: todayAvgAccuracy + "%" },
+      ];
+
+      totalData = [
+        { label: "Total sessions", content: totalSessions },
+        { label: "Total wpm", content: totalAvgWpm },
+        { label: "Total accuracy", content: totalAvgAccuracy + "%" },
+      ];
+
       loading = false;
     }
   });
@@ -66,17 +80,21 @@
     </span>
   {:else}
     <div class="flex w-full">
-      <Box class="mr-2 w-1/2">
-        <h1 class="text-white">Today statistics</h1>
-        <p>session: {todaySessions}</p>
-        <p>average words per minutes: {todayAvgWpm}</p>
-        <p>average accuracy: {todayAvgAccuracy}</p>
+      <Box class="mr-2 w-1/2 flex items-center justify-between">
+        {#each todayData as data}
+          <div class="px-10 border-l-2 first:border-0 border-border">
+            <p>{data.label}</p>
+            <p class="mt-4 text-3xl font-bold">{data.content}</p>
+          </div>
+        {/each}
       </Box>
-      <Box class="ml-2 w-1/2">
-        <h1 class="text-white">Overall statistics</h1>
-        <p>session: {totalSessions}</p>
-        <p>average words per minutes: {totalAvgWpm}</p>
-        <p>average accuracy: {totalAvgAccuracy}</p>
+      <Box class="ml-2 w-1/2 flex items-center justify-between">
+        {#each totalData as data}
+          <div class="px-10 border-l-2 first:border-0 border-border">
+            <p>{data.label}</p>
+            <p class="mt-4 text-3xl font-bold">{data.content}</p>
+          </div>
+        {/each}
       </Box>
     </div>
     <Box class="my-4 w-full">Trend Chart</Box>

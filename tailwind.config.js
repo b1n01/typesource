@@ -20,7 +20,10 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      borderWidth: ["first"],
+      padding: ["first"],
+    },
   },
   plugins: [],
 };
