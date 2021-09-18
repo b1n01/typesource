@@ -3,31 +3,53 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { user } from "./stores";
 
-const random = (min, max) => {
+const random = (min = 0, max = 1) => {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
 // Seed db
 export const seedDB = async () => {
   if (get(user) && !get(user).isAnonymous) {
+    let slack = 15;
+    let prevWpm = 35;
+    let prevAccuracy = 80;
+
     // Seed some data in the past
-    for (let i = 0; i < random(150, 400); i++) {
+    let date = new Date("01/01/2021");
+    for (let i = 0; i < random(200, 400); i++) {
+      let wpm = random(prevWpm - slack, prevWpm + slack);
+      let accuracy = random(
+        prevAccuracy - slack,
+        Math.min(100, prevAccuracy + slack)
+      );
+
+      // Go to next day only some times
+      if (Math.round(random(0, 55) / 100)) {
+        date.setDate(date.getDate() + 1);
+      }
+
       const metrics = {
-        wpm: random(0, 160),
-        accuracy: random(0, 100),
+        wpm: wpm,
+        accuracy: accuracy,
         typedChars: [],
         correctChars: 0,
         uid: get(user).uid,
-        timestamp: new Date(2021, random(0, 11), random(1, 28)),
+        timestamp: date,
       };
       await addDoc(collection(db, "metrics"), metrics);
     }
 
     // Seed some data for today
     for (let i = 0; i < random(1, 30); i++) {
+      let wpm = random(prevWpm - slack, prevWpm + slack);
+      let accuracy = random(
+        prevAccuracy - slack,
+        Math.min(100, prevAccuracy + slack)
+      );
+
       const metrics = {
-        wpm: random(0, 160),
-        accuracy: random(0, 100),
+        wpm: wpm,
+        accuracy: accuracy,
         typedChars: [],
         correctChars: 0,
         uid: get(user).uid,
