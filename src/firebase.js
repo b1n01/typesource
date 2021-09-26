@@ -1,5 +1,6 @@
 import { userReady, user } from "./stores";
 import { initializeApp } from "firebase/app";
+import { isEqual } from "lodash";
 import {
   getAuth,
   connectAuthEmulator,
@@ -49,14 +50,20 @@ const getUser = () => {
 
   // Update all handlers whith logged in user
   auth.onAuthStateChanged((newUser) => {
-    userReady.set(true);
-    user = newUser;
-    handlers.forEach((handler) => handler(user));
+    // Update all hanlders only if user has changed.
+    // This is needed because "onAuthStateChanged" is
+    // called even if the user is the same
+    if (!isEqual(user, newUser)) {
+      userReady.set(true);
+      user = newUser;
+      handlers.forEach((handler) => handler(user));
 
-    if (user == null) {
-      signInAnonymously(auth).catch((e) =>
-        console.error("Error while logging in the user anonymously.", e)
-      );
+      // If the user logged out, log back in anonymously
+      if (user == null) {
+        signInAnonymously(auth).catch((e) =>
+          console.error("Error while logging in the user anonymously.", e)
+        );
+      }
     }
   });
 
