@@ -6,7 +6,7 @@
     orderBy,
     getDocs,
   } from "firebase/firestore";
-  import { tick, onDestroy } from "svelte";
+  import { tick } from "svelte";
   import { db } from "../firebase";
   import { user } from "../stores";
   import Loader from "./Loader.svelte";
@@ -183,27 +183,25 @@
   }
 
   // When the user is ready fetch data from DB
-  const unsubscribeUser = user.subscribe(async () => {
-    if ($user) {
-      loading = true;
-      const metricsColl = collection(db, "metrics");
-      const select = query(
-        metricsColl,
-        where("uid", "==", $user.uid),
-        orderBy("timestamp")
-      );
-      const metrics = await getDocs(select);
+  $: if ($user) {
+    loading = true;
+    const metricsColl = collection(db, "metrics");
+    const select = query(
+      metricsColl,
+      where("uid", "==", $user.uid),
+      orderBy("timestamp")
+    );
 
+    getDocs(select).then((metrics) => {
       // Set loading to false and wait a tick to let svelte
       // draw the html to then render the chart
       loading = false;
-      isEmpty = false;
-      await tick();
-
-      calculateStats(metrics);
-      drawChart(metrics);
-    }
-  });
+      tick().then(() => {
+        calculateStats(metrics);
+        drawChart(metrics);
+      });
+    });
+  }
 
   // Calculates statistics from user metrics and puts them into todayStats and totalStats
   const calculateStats = (metrics) => {
@@ -254,8 +252,8 @@
   // Render the chart
   const drawChart = (metrics) => {
     if (metrics.size == 0) {
-      // Is no metrics show empty state and do not try to run the chart
-      // otherwise will get an error because the canvcas is not rendered
+      // If no metrics then show empty state and do not try to run the chart
+      // otherwise will get an error because the canvas is not rendered
       isEmpty = true;
       return;
     }
@@ -290,9 +288,6 @@
     const canvas = document.getElementById("chart").getContext("2d");
     initChart(canvas, series, labels);
   };
-
-  // TODO check this
-  onDestroy(() => unsubscribeUser());
 </script>
 
 <div class="p-8 w-full">
