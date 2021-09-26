@@ -315,11 +315,12 @@
           {/each}
         </Box>
       </div>
-      <Box class="my-5 px-32 pt-8">
+      <Box class="my-5 px-32 py-8">
         {#if isEmpty}
-          <p>
-            No data to show 😳. Play some sessions to start gather usefull data!
-          </p>
+          <div class="text-center my-16">
+            <p class="text-2xl mb-4">😞 No enough data to draw the chart</p>
+            <p>Play some sessions to start gather useful statistics</p>
+          </div>
         {:else}
           <canvas id="chart" />
         {/if}
