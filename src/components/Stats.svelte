@@ -6,6 +6,7 @@
     orderBy,
     getDocs,
   } from "firebase/firestore";
+  import { tick, onDestroy } from "svelte";
   import { db } from "../firebase";
   import { user } from "../stores";
   import Loader from "./Loader.svelte";
@@ -182,8 +183,9 @@
   }
 
   // When the user is ready fetch data from DB
-  user.subscribe(async () => {
+  const unsubscribeUser = user.subscribe(async () => {
     if ($user) {
+      loading = true;
       const metricsColl = collection(db, "metrics");
       const select = query(
         metricsColl,
@@ -192,10 +194,14 @@
       );
       const metrics = await getDocs(select);
 
+      // Set loading to false and wait a tick to let svelte
+      // draw the html to then render the chart
+      loading = false;
+      isEmpty = false;
+      await tick();
+
       calculateStats(metrics);
       drawChart(metrics);
-
-      loading = false;
     }
   });
 
@@ -223,11 +229,13 @@
     if (totals.sessions) {
       stats.sessions = totals.sessions;
       stats.wpm = Math.round(totals.wpm / totals.sessions);
+      stats.acc = Math.round(totals.acc / totals.sessions);
     }
 
     if (totals.today.sessions) {
       stats.today.sessions = totals.today.sessions;
       stats.today.wpm = Math.round(totals.today.wpm / totals.today.sessions);
+      stats.today.acc = Math.round(totals.today.acc / totals.today.sessions);
     }
 
     totalStats = [
@@ -245,7 +253,13 @@
 
   // Render the chart
   const drawChart = (metrics) => {
-    isEmpty = metrics.size == 0;
+    if (metrics.size == 0) {
+      // Is no metrics show empty state and do not try to run the chart
+      // otherwise will get an error because the canvcas is not rendered
+      isEmpty = true;
+      return;
+    }
+
     let series = { sessions: [], wpm: [], acc: [] };
     let labels = [];
     let dates = {};
@@ -276,41 +290,45 @@
     const canvas = document.getElementById("chart").getContext("2d");
     initChart(canvas, series, labels);
   };
+
+  // TODO check this
+  onDestroy(() => unsubscribeUser());
 </script>
 
 <div class="p-8 w-full">
-  <span
-    class="h-32 flex justify-center items-center {!loading ? 'hidden' : ''}"
-  >
-    <Loader />
-  </span>
-  <div class={loading ? "hidden" : ""}>
-    <div class="flex w-full">
-      <Box class="mr-2 w-1/2 flex items-center justify-between">
-        {#each todayStats as data}
-          <div class="px-10 border-l-2 first:border-0 border-border">
-            <p>{data.label}</p>
-            <p class="mt-4 text-3xl font-bold">{data.content}</p>
-          </div>
-        {/each}
-      </Box>
-      <Box class="ml-2 w-1/2 flex items-center justify-between">
-        {#each totalStats as data}
-          <div class="px-10 border-l-2 first:border-0 border-border">
-            <p>{data.label}</p>
-            <p class="mt-4 text-3xl font-bold">{data.content}</p>
-          </div>
-        {/each}
+  {#if loading}
+    <span class="h-32 flex justify-center items-center">
+      <Loader />
+    </span>
+  {:else}
+    <div>
+      <div class="flex w-full">
+        <Box class="mr-2 w-1/2 flex items-center justify-between">
+          {#each todayStats as data}
+            <div class="px-10 border-l-2 first:border-0 border-border">
+              <p>{data.label}</p>
+              <p class="mt-4 text-3xl font-bold">{data.content}</p>
+            </div>
+          {/each}
+        </Box>
+        <Box class="ml-2 w-1/2 flex items-center justify-between">
+          {#each totalStats as data}
+            <div class="px-10 border-l-2 first:border-0 border-border">
+              <p>{data.label}</p>
+              <p class="mt-4 text-3xl font-bold">{data.content}</p>
+            </div>
+          {/each}
+        </Box>
+      </div>
+      <Box class="my-5 px-32 pt-8">
+        {#if isEmpty}
+          <p>
+            No data to show 😳. Play some sessions to start gather usefull data!
+          </p>
+        {:else}
+          <canvas id="chart" />
+        {/if}
       </Box>
     </div>
-    <Box class="my-5 px-32 pt-8">
-      {#if isEmpty}
-        <p>
-          No data to show 😳. Play some sessions to start gather usefull data!
-        </p>
-      {:else}
-        <canvas id="chart" />
-      {/if}
-    </Box>
-  </div>
+  {/if}
 </div>
