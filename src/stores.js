@@ -15,7 +15,7 @@ export const rounds = writable(0); // how many rounds played in the current sess
 
 // Metrics
 export const wpm = writable(null); // words per minutes
-export const accuracy = writable(null); // accuracy percentages (correct chars / typed chars
+export const accuracy = writable(null); // accuracy percentages (correct chars / typed chars)
 
 // Match
 export const players = writable([]); // the states of remote players
@@ -25,4 +25,3 @@ export const fileUrl = getStore("file", "");
 
 // Auth
 export const user = getUser(); // the logged in user (null if not logged)
-export const userReady = writable(false); // whether we have checked if the user is logged in
