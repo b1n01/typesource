@@ -2,11 +2,9 @@
   import {
     timer,
     elapsed,
-    correctChars,
-    typedChars,
+    keystrokes,
     rounds,
-    wpm,
-    accuracy,
+    metrics,
     position,
     players,
     fileUrl,
@@ -33,10 +31,10 @@
     <p>editor state: {JSON.stringify($userState.value)}</p>
     <p>elapsed: {$elapsed}</p>
     <p>timer: {$timer}</p>
-    <p>typed chars: {$typedChars.length}</p>
-    <p>correct chars: {$correctChars}</p>
-    <p>accuracy: {$accuracy}</p>
-    <p>wpm: {$wpm}</p>
+    <p>typed chars: {$keystrokes.typedChars.length}</p>
+    <p>correct chars: {$keystrokes.correctChars}</p>
+    <p>accuracy: {$metrics.accuracy}</p>
+    <p>wpm: {$metrics.wpm}</p>
     <p>rounds: {$rounds}</p>
     <p>position: {$position.lineNumber}:{$position.column}</p>
     <p>

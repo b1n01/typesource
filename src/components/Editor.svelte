@@ -1,13 +1,7 @@
 <script>
   import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
   import { tick } from "svelte";
-  import {
-    correctChars,
-    typedChars,
-    position,
-    players,
-    fileUrl,
-  } from "../stores.js";
+  import { keystrokes, position, players, fileUrl } from "../stores.js";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
   import monacoConfig from "../monaco.config";
@@ -122,8 +116,8 @@
         return;
       }
 
-      // Update typed characters
-      $typedChars = [...$typedChars, typedKey];
+      let typedChars = [...$keystrokes.typedChars, typedKey];
+      let correctChars = $keystrokes.correctChars;
 
       // Find out next character
       let nextChar = editor.getModel().getValueInRange({
@@ -138,8 +132,15 @@
         $position.column++;
         editor.setPosition($position);
         updateDecoration($position);
-        $correctChars = $correctChars + 1;
+        correctChars = $keystrokes.correctChars + 1;
       }
+
+      // Update typed characters and correctChars atomically
+      // (we need this because otherwise $metrics will calculate wrong numbers)
+      $keystrokes = {
+        typedChars: typedChars,
+        correctChars: correctChars,
+      };
 
       // If we are at the end of the line and the Enter is pressed
       // than go on next line

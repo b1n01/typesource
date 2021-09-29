@@ -7,8 +7,8 @@ const round = 8; // how many seconds in a round
 // Update timer with the new elapsed time since last session start
 const updateTimer = () => {
   let time = get(elapsed) + 1;
-  if (time > round) {
-    time = 1;
+  if (time >= round) {
+    time = 0;
     rounds.set(get(rounds) + 1);
   }
 
