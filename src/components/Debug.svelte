@@ -3,12 +3,12 @@
     timer,
     elapsed,
     keystrokes,
-    rounds,
     metrics,
     position,
     players,
     fileUrl,
     user,
+    showChart,
   } from "../stores";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
@@ -16,6 +16,7 @@
 
   let show = false;
   const toggle = () => (show = !show);
+  const toggleChart = () => ($showChart = !$showChart);
 </script>
 
 <section
@@ -35,7 +36,6 @@
     <p>correct chars: {$keystrokes.correctChars}</p>
     <p>accuracy: {$metrics.accuracy}</p>
     <p>wpm: {$metrics.wpm}</p>
-    <p>rounds: {$rounds}</p>
     <p>position: {$position.lineNumber}:{$position.column}</p>
     <p>
       players: {$players.map(
@@ -43,7 +43,7 @@
       )}
     </p>
 
-    <p class="flex justify-between cursor-pointer pb-2 pt-2">Actions</p>
+    <p class="flex justify-between cursor-pointer pb-2 pt-4">Actions</p>
     {#if $user && !$user.isAnonymous}
       <button class="bg-gray-300 rounded px-2 text-black" on:click={seedDB}>
         Seed DB
@@ -53,6 +53,12 @@
         Seed DB
       </button>
     {/if}
+    <button
+      class="bg-gray-300 rounded px-2 mt-2 text-black block"
+      on:click={toggleChart}
+    >
+      Toggle Chart
+    </button>
   {:else}
     <p class="cursor-pointer" on:click={toggle}>
       Debug<span class="ml-4">⬆️</span>

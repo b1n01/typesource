@@ -1,14 +1,24 @@
 import { get } from "svelte/store";
-import { rounds, user, metrics, keystrokes } from "./stores";
+import { user, metrics, keystrokes, showChart, sessionData } from "./stores";
+import { userState } from "./states";
 import { db } from "./firebase";
 import { serverTimestamp, collection, addDoc } from "firebase/firestore";
 
 export const init = () => {
-  // Reset metrics on every round
-  rounds.subscribe(() => {
-    // Store match results
-    // This check is required because on first subscription to 'rounds' the user could be not available yet
-    if (get(user)) {
+  let series = [];
+  metrics.subscribe((amount) => {
+    if (amount.wpm) series.push(amount);
+  });
+
+  // When the state goes to stopped, save last round data
+  // and show the chart
+  userState.subscribe((state) => {
+    if (state.matches("offline.stopped")) {
+      sessionData.set(series);
+      series = [];
+      showChart.set(true);
+
+      // Store match results
       const data = {
         wpm: get(metrics).wpm,
         accuracy: get(metrics).accuracy,
@@ -18,12 +28,12 @@ export const init = () => {
         timestamp: serverTimestamp(),
       };
       addDoc(collection(db, "metrics"), data);
-    }
 
-    // Reset metrics
-    keystrokes.set({
-      correctChars: 0,
-      typedChars: [],
-    });
+      // Reset metrics
+      keystrokes.set({
+        correctChars: 0,
+        typedChars: [],
+      });
+    }
   });
 };

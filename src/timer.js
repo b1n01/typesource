@@ -1,20 +1,20 @@
 import { get } from "svelte/store";
-import { elapsed, interval, timer, rounds } from "./stores";
+import { elapsed, interval, timer } from "./stores";
 import { userState } from "./states";
 
-const round = 8; // how many seconds in a round
+const round = 5; // how many seconds in a round
 
 // Update timer with the new elapsed time since last session start
 const updateTimer = () => {
   let time = get(elapsed) + 1;
   if (time >= round) {
     time = 0;
-    rounds.set(get(rounds) + 1);
+    userState.send("STOP");
+  } else {
+    let formatted = (round - time).toString();
+    timer.set(formatted);
+    elapsed.set(time);
   }
-
-  let formatted = (round - time).toString();
-  timer.set(formatted);
-  elapsed.set(time);
 };
 
 // Initialize the Timer to automatically start/pausa/stop the timer
@@ -43,7 +43,7 @@ export const pause = () => {
 
 // Stop the timer
 export const stop = () => {
-  timer.set(round);
+  timer.set("-");
   elapsed.set(0);
   clearInterval(get(interval));
 };
