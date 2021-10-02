@@ -7,6 +7,9 @@
   import Debug from "./Debug.svelte";
   import InfoBox from "./InfoBox.svelte";
   import Stats from "./Stats.svelte";
+  import Modal from "./Modal.svelte";
+  import Chart from "./Chart.svelte";
+  import { showChart } from "../stores";
 </script>
 
 <Router>
@@ -27,6 +30,11 @@
       <div class="w-2/3 m-4 ml-2 xl:m-8 xl:ml-4 2xl:w-3/4">
         <Editor />
       </div>
+      {#if $showChart}
+        <Modal>
+          <Chart />
+        </Modal>
+      {/if}
     </Route>
     <Route path="stats">
       <Stats />
