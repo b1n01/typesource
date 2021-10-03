@@ -1,8 +1,11 @@
 <script>
+  import Box from "./Box";
   import { tick } from "svelte";
   import { sessionData } from "../stores";
   import { userState } from "../states";
   import { getOptions, getChart } from "../chart";
+
+  const lastData = $sessionData[$sessionData.length - 1];
 
   tick().then(() => {
     const canvas = document.getElementById("chart-session");
@@ -24,10 +27,25 @@
   };
 </script>
 
-<div class="w-1/2 mx-auto mt-16 relative">
-  <h1 class="text-white text-xl font-bold">Last session stats</h1>
-  <span class="absolute top-0 right-0 cursor-pointer" on:click={closeChart}>
-    ❌
-  </span>
+<Box class="w-3/5 mx-auto m-8 relative p-8">
+  <p
+    class="absolute top-8 right-8 text-right cursor-pointer text-lg font-bold"
+    on:click={closeChart}
+  >
+    ↩️ Play another round
+  </p>
+  <div class="w-full">
+    <div class="flex">
+      <div class="text-center">
+        <p>Accuracy</p>
+        <span class="text-4xl font-bold">{lastData?.accuracy}</span>
+      </div>
+      <div class="ml-16 text-center">
+        <p>Wpm</p>
+        <span class="text-4xl font-bold">{lastData?.wpm}</span>
+      </div>
+    </div>
+  </div>
+
   <canvas class="mt-8" id="chart-session" />
-</div>
+</Box>
