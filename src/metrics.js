@@ -3,7 +3,6 @@ import {
   user,
   metrics,
   keystrokes,
-  showChart,
   sessionData,
   elapsed,
   resetKeystrokes,
@@ -14,29 +13,24 @@ import { db } from "./firebase";
 import { serverTimestamp, collection, addDoc } from "firebase/firestore";
 
 export const init = () => {
-  // Update metrics (and data for the current session) each second
+  // Update metrics and store them to the sessionData array each seconds
   elapsed.subscribe((elapsed) => {
-    const strokes = get(keystrokes);
+    const key = get(keystrokes);
 
-    if (elapsed && strokes.typedChars.length) {
+    if (elapsed && key.typedChars.length) {
       const data = {
-        accuracy: Math.round(
-          (strokes.correctChars / strokes.typedChars.length) * 100
-        ),
-        wpm: Math.floor((strokes.correctChars / 5 / elapsed) * 60),
+        accuracy: Math.round((key.correctChars / key.typedChars.length) * 100),
+        wpm: Math.floor((key.correctChars / 5 / elapsed) * 60),
       };
       metrics.set(data);
       get(sessionData).push(data);
     }
   });
 
-  // When the state goes to stopped, save last round data
-  // and show the chart
+  // When a session had ended store metrics to firestore and reset
+  // both keystrokes and metrics
   userState.subscribe((state) => {
-    if (state.matches("offline.stopped")) {
-      showChart.set(true);
-
-      // Store match results
+    if (state.matches("offline.ended")) {
       const data = {
         wpm: get(metrics).wpm,
         accuracy: get(metrics).accuracy,
@@ -45,8 +39,8 @@ export const init = () => {
         uid: get(user).uid,
         timestamp: serverTimestamp(),
       };
-      addDoc(collection(db, "metrics"), data);
 
+      addDoc(collection(db, "metrics"), data);
       resetKeystrokes();
       resetMetrics();
     }

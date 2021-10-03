@@ -9,7 +9,7 @@ const updateTimer = () => {
   let time = get(elapsed) + 1;
   if (time >= round) {
     time = 0;
-    userState.send("STOP");
+    userState.send("END");
   } else {
     let formatted = (round - time).toString();
     timer.set(formatted);
@@ -25,6 +25,7 @@ export const init = () => {
     if (state.matches("offline.active")) start();
     if (state.matches("offline.paused")) pause();
     if (state.matches("offline.stopped")) stop();
+    if (state.matches("offline.ended")) stop();
     if (state.matches("online.lobby")) stop();
     if (state.matches("online.playing")) start();
     if (state.matches("online.finished")) pause();

@@ -8,7 +8,6 @@
     players,
     fileUrl,
     user,
-    showChart,
   } from "../stores";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
@@ -16,7 +15,6 @@
 
   let show = false;
   const toggle = () => (show = !show);
-  const toggleChart = () => ($showChart = !$showChart);
 </script>
 
 <section
@@ -53,12 +51,6 @@
         Seed DB
       </button>
     {/if}
-    <button
-      class="bg-gray-300 rounded px-2 mt-2 text-black block"
-      on:click={toggleChart}
-    >
-      Toggle Chart
-    </button>
   {:else}
     <p class="cursor-pointer" on:click={toggle}>
       Debug<span class="ml-4">⬆️</span>

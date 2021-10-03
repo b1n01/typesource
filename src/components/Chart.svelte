@@ -1,7 +1,8 @@
 <script>
   import Chart from "chart.js/auto";
   import { tick } from "svelte";
-  import { sessionData, showChart } from "../stores";
+  import { sessionData } from "../stores";
+  import { userState } from "../states";
 
   const chartColors = {
     sessions: "#e07a5f",
@@ -134,7 +135,7 @@
     initChart(canvas, series, labels);
   });
 
-  const closeChart = () => ($showChart = false);
+  const closeChart = () => userState.send("RESET");
 </script>
 
 <div class="w-1/2 mx-auto mt-16 relative">

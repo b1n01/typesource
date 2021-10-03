@@ -29,10 +29,14 @@ export const userState = interpret(
           stopped: {
             on: { START: "active" },
           },
+          ended: {
+            on: { START: "active", RESET: "inactive" },
+          },
           active: {
             on: {
               PAUSE: "paused",
               STOP: "stopped",
+              END: "ended",
             },
           },
           paused: {

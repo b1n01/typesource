@@ -28,7 +28,6 @@ export const resetMetrics = () => metrics.set(defaultMetrics);
 
 // Last session data
 export const sessionData = writable([]); // series of data for the last session
-export const showChart = writable(false); // whether to show the chart with last session data
 
 // Match
 export const players = writable([]); // the states of remote players
