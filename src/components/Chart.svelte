@@ -38,11 +38,11 @@
     <div class="flex">
       <div class="text-center">
         <p>Accuracy</p>
-        <span class="text-4xl font-bold">{lastData?.accuracy}</span>
+        <span class="text-3xl font-bold">{lastData?.accuracy}</span>
       </div>
       <div class="ml-16 text-center">
         <p>Wpm</p>
-        <span class="text-4xl font-bold">{lastData?.wpm}</span>
+        <span class="text-3xl font-bold">{lastData?.wpm}</span>
       </div>
     </div>
   </div>
