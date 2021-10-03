@@ -11,7 +11,7 @@
   import { user } from "../stores";
   import Loader from "./Loader.svelte";
   import Box from "./Box.svelte";
-  import { options as baseChartOptions, getChart } from "../chart";
+  import { getOptions, getChart } from "../chart";
 
   let loading = true; // whether is fetching data from the db
   let isEmpty = false; // wheter there are no data to display
@@ -19,7 +19,7 @@
   let totalStats = []; // stats to be rendered with total data
   let today = new Date().toLocaleDateString("en-US");
 
-  let chartOptions = baseChartOptions;
+  let chartOptions = getOptions();
   chartOptions.plugins.tooltip.callbacks.title = (context) => {
     // Format tooltip title date
     let date = new Date(context[0].label);
@@ -149,7 +149,7 @@
     }
 
     const canvas = document.getElementById("chart");
-    getChart(canvas, series, labels, chartOptions);
+    return getChart(canvas, series, labels, chartOptions);
   };
 </script>
 

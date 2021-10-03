@@ -1,16 +1,20 @@
 import Chart from "chart.js/auto";
+// We need to clone the options otherwise differen charts will
+// overwrite the same config
+import { clone } from "chart.js/helpers";
 
 // Chart colors
-export const colors = {
+const colors = {
   sessions: "#e07a5f",
   wpm: "#f2cc8f",
   accuracy: "#81b29a",
   x: "#666",
   legend: "#999",
 };
+export const getColors = () => clone(colors);
 
-//
-export const options = {
+// Line chart base options
+const options = {
   animation: false,
   interaction: {
     mode: "index",
@@ -90,6 +94,7 @@ export const options = {
     },
   },
 };
+export const getOptions = () => clone(options);
 
 // Create a new line chart
 export const getChart = (canvas, series, labels, options) => {

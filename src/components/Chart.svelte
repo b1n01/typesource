@@ -2,10 +2,10 @@
   import { tick } from "svelte";
   import { sessionData } from "../stores";
   import { userState } from "../states";
-  import { options, getChart } from "../chart";
+  import { getOptions, getChart } from "../chart";
 
   tick().then(() => {
-    const canvas = document.getElementById("chart");
+    const canvas = document.getElementById("chart-session");
     let series = { wpm: [], acc: [] };
     let labels = [];
 
@@ -15,10 +15,13 @@
       labels.push(key + 1);
     });
 
-    getChart(canvas, series, labels, options);
+    getChart(canvas, series, labels, getOptions());
   });
 
-  const closeChart = () => userState.send("RESET");
+  const closeChart = () => {
+    $sessionData = [];
+    userState.send("RESET");
+  };
 </script>
 
 <div class="w-1/2 mx-auto mt-16 relative">
@@ -26,5 +29,5 @@
   <span class="absolute top-0 right-0 cursor-pointer" on:click={closeChart}>
     ❌
   </span>
-  <canvas class="mt-8" id="chart" />
+  <canvas class="mt-8" id="chart-session" />
 </div>
