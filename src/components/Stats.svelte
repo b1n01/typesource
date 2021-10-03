@@ -11,7 +11,7 @@
   import { user } from "../stores";
   import Loader from "./Loader.svelte";
   import Box from "./Box.svelte";
-  import Chart from "chart.js/auto";
+  import { options as baseChartOptions, getChart } from "../chart";
 
   let loading = true; // whether is fetching data from the db
   let isEmpty = false; // wheter there are no data to display
@@ -19,116 +19,16 @@
   let totalStats = []; // stats to be rendered with total data
   let today = new Date().toLocaleDateString("en-US");
 
-  const chartColors = {
-    sessions: "#e07a5f",
-    wpm: "#f2cc8f",
-    accuracy: "#81b29a",
-    x: "#666",
-    legend: "#999",
-  };
-
-  const chartOptions = {
-    animation: false,
-    interaction: {
-      mode: "index",
-      intersect: false,
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: chartColors.legend,
-        },
-        grid: {
-          color: chartColors.x,
-          borderColor: chartColors.x,
-        },
-      },
-      // ySessions: {
-      //   title: {
-      //     display: true,
-      //     text: "Number of sessions",
-      //     color: chartColors.sessions,
-      //   },
-      //   ticks: {
-      //     color: chartColors.sessions,
-      //   },
-      //   grid: {
-      //     borderColor: chartColors.sessions,
-      //     drawOnChartArea: false,
-      //   },
-      // },
-      yWpm: {
-        title: {
-          display: true,
-          text: "Words per minute",
-          color: chartColors.wpm,
-        },
-        position: "left",
-        ticks: {
-          color: chartColors.wpm,
-        },
-        grid: {
-          borderColor: chartColors.wpm,
-          drawOnChartArea: false,
-        },
-      },
-      yAccuracy: {
-        title: {
-          display: true,
-          text: "Accuracy",
-          color: chartColors.accuracy,
-        },
-        position: "right",
-        ticks: {
-          color: chartColors.accuracy,
-        },
-        grid: {
-          borderColor: chartColors.accuracy,
-          drawOnChartArea: false,
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          color: "#FFF",
-          padding: 32,
-          font: {
-            size: 14,
-          },
-        },
-      },
-      tooltip: {
-        titleAlign: "center",
-        bodySpacing: 8,
-        padding: 12,
-        titleFont: {
-          size: 14,
-        },
-        bodyFont: {
-          size: 14,
-        },
-        callbacks: {
-          label: (context) => {
-            // Format each tooltip label
-            let label = context.dataset.label;
-            label = " " + label; // add left space
-            return label + ": " + context.parsed.y;
-          },
-          title: (context) => {
-            // Format tooltip title date
-            let date = new Date(context[0].label);
-            let options = {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            };
-            return date.toLocaleDateString("en-US", options);
-          },
-        },
-      },
-    },
+  let chartOptions = baseChartOptions;
+  chartOptions.plugins.tooltip.callbacks.title = (context) => {
+    // Format tooltip title date
+    let date = new Date(context[0].label);
+    let options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    };
+    return date.toLocaleDateString("en-US", options);
   };
 
   // Get empty stats
@@ -143,43 +43,6 @@
         acc: 0,
       },
     };
-  }
-
-  // Create the chart
-  function initChart(canvas, series, labels) {
-    return new Chart(canvas, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          // {
-          //   label: "sessions",
-          //   data: sessionsDataset,
-          //   backgroundColor: chartColors.sessions,
-          //   borderColor: chartColors.sessions,
-          //   tension: 0.3,
-          //   yAxisID: "ySessions",
-          // },
-          {
-            label: "wpm",
-            data: series.wpm,
-            backgroundColor: chartColors.wpm,
-            borderColor: chartColors.wpm,
-            tension: 0.3,
-            yAxisID: "yWpm",
-          },
-          {
-            label: "accuracy",
-            data: series.acc,
-            backgroundColor: chartColors.accuracy,
-            borderColor: chartColors.accuracy,
-            tension: 0.3,
-            yAxisID: "yAccuracy",
-          },
-        ],
-      },
-      options: chartOptions,
-    });
   }
 
   // When the user is ready fetch data from DB
@@ -285,8 +148,8 @@
       series.acc.push(sessions ? Math.round(accuracy / sessions) : 0);
     }
 
-    const canvas = document.getElementById("chart").getContext("2d");
-    initChart(canvas, series, labels);
+    const canvas = document.getElementById("chart");
+    getChart(canvas, series, labels, chartOptions);
   };
 </script>
 
