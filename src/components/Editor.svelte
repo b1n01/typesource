@@ -1,6 +1,6 @@
 <script>
   import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
-  import { tick } from "svelte";
+  import { onDestroy, tick } from "svelte";
   import { keystrokes, position, players, fileUrl } from "../stores.js";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
@@ -95,7 +95,9 @@
   // On blur set state paused
   const handleBlur = () => {
     editor.onDidBlurEditorText(() => {
-      userState.send("PAUSE");
+      if (["offline.active", "online.playing"].some($userState.matches)) {
+        userState.send("PAUSE");
+      }
     });
   };
 
@@ -239,7 +241,7 @@
     // Set state as paused on editor blur
     handleBlur();
 
-    // Pent keybord navigation when the editor has focus
+    // Prevent keybord navigation when the editor has focus
     preventKeyboardNavigation();
   });
 
@@ -263,6 +265,11 @@
 
   // Reset decoration (gray text) when the match finishes
   $: editor && $userState.matches("online.finished") && removeDecoration();
+
+  // Remove listeners when component is destroyed
+  onDestroy(() => {
+    document.onkeydown = null;
+  });
 </script>
 
 <div class="autoHeight p-8 rounded bg-float">

@@ -1,7 +1,7 @@
 <script>
   import Chart from "chart.js/auto";
   import { tick } from "svelte";
-  import { sessionData } from "../stores";
+  import { sessionData, showChart } from "../stores";
 
   const chartColors = {
     sessions: "#e07a5f",
@@ -86,16 +86,7 @@
             label = " " + label; // add left space
             return label + ": " + context.parsed.y;
           },
-          title: (context) => {
-            // Format tooltip title date
-            let date = new Date(context[0].label);
-            let options = {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            };
-            return date.toLocaleDateString("en-US", options);
-          },
+          title: () => null,
         },
       },
     },
@@ -130,21 +121,26 @@
   }
 
   tick().then(() => {
-    let series = { sessions: [], wpm: [], acc: [] };
+    let series = { wpm: [], acc: [] };
     let labels = [];
 
-    for (let i = 0; i < 30; i++) {
-      series.wpm.push(Math.random());
-      series.acc.push(Math.random());
-      labels.push(i + 1);
-    }
+    $sessionData.forEach((data, key) => {
+      series.wpm.push(data.wpm);
+      series.acc.push(data.accuracy);
+      labels.push(key + 1);
+    });
 
     const canvas = document.getElementById("chart").getContext("2d");
     initChart(canvas, series, labels);
   });
+
+  const closeChart = () => ($showChart = false);
 </script>
 
-<div class="w-1/2">
-  <h1 class="text-white text-lg">Last session stats</h1>
+<div class="w-1/2 mx-auto mt-16 relative">
+  <h1 class="text-white text-xl font-bold">Last session stats</h1>
+  <span class="absolute top-0 right-0 cursor-pointer" on:click={closeChart}>
+    ❌
+  </span>
   <canvas class="mt-8" id="chart" />
 </div>

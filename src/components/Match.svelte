@@ -6,7 +6,7 @@
   import { WebrtcProvider } from "y-webrtc";
   import { userState } from "../states";
   import { ydoc } from "../ystores";
-  import { position, players, fileUrl, keystrokes, user } from "../stores";
+  import { position, players, fileUrl, user, resetKeystrokes } from "../stores";
 
   const url = new URL(window.location.href); // the url
   let showCopyLabel = false; // wheter to show a confirmation for copying to clipboard
@@ -154,10 +154,7 @@
   // Reset collected metrics and restart the match
   const restartMatch = () => {
     userState.send("RESTART");
-    $keystrokes = {
-      correctChars: 0,
-      typedChars: [],
-    };
+    resetKeystrokes();
   };
 
   // Get wheter the user has won the last match

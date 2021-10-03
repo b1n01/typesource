@@ -1,5 +1,5 @@
 <script>
-  import { keystrokes, fileUrl } from "../stores.js";
+  import { fileUrl, resetKeystrokes } from "../stores.js";
   import { userState } from "../states";
   import Loader from "./Loader.svelte";
   import Input from "./Input.svelte";
@@ -75,10 +75,7 @@
 
     $fileUrl = file.download_url;
     userState.send("STOP");
-    $keystrokes = {
-      correctChars: 0,
-      typedChars: [],
-    };
+    resetKeystrokes();
   };
 
   // Get repo url path

@@ -1,21 +1,39 @@
 import { get } from "svelte/store";
-import { user, metrics, keystrokes, showChart, sessionData } from "./stores";
+import {
+  user,
+  metrics,
+  keystrokes,
+  showChart,
+  sessionData,
+  elapsed,
+  resetKeystrokes,
+  resetMetrics,
+} from "./stores";
 import { userState } from "./states";
 import { db } from "./firebase";
 import { serverTimestamp, collection, addDoc } from "firebase/firestore";
 
 export const init = () => {
-  let series = [];
-  metrics.subscribe((amount) => {
-    if (amount.wpm) series.push(amount);
+  // Update metrics (and data for the current session) each second
+  elapsed.subscribe((elapsed) => {
+    const strokes = get(keystrokes);
+
+    if (elapsed && strokes.typedChars.length) {
+      const data = {
+        accuracy: Math.round(
+          (strokes.correctChars / strokes.typedChars.length) * 100
+        ),
+        wpm: Math.floor((strokes.correctChars / 5 / elapsed) * 60),
+      };
+      metrics.set(data);
+      get(sessionData).push(data);
+    }
   });
 
   // When the state goes to stopped, save last round data
   // and show the chart
   userState.subscribe((state) => {
     if (state.matches("offline.stopped")) {
-      sessionData.set(series);
-      series = [];
       showChart.set(true);
 
       // Store match results
@@ -29,11 +47,8 @@ export const init = () => {
       };
       addDoc(collection(db, "metrics"), data);
 
-      // Reset metrics
-      keystrokes.set({
-        correctChars: 0,
-        typedChars: [],
-      });
+      resetKeystrokes();
+      resetMetrics();
     }
   });
 };

@@ -11,30 +11,24 @@ export const interval = writable(null); // id of the current timer interval
 export const timer = writable("-"); // timer in the format `-`
 
 // Keystrokes
-export const keystrokes = writable({
+const defaultKeystrokes = {
   typedChars: [], // all the characters typed in this session // TODO can we just store the number?
   correctChars: 0, // how many correct characters has been typed
-});
+};
+export const keystrokes = writable(defaultKeystrokes);
+export const resetKeystrokes = () => keystrokes.set(defaultKeystrokes);
 
-// Metrics is a store that derives from both keystrokes and elapses.
-// When at least one second is elapsed and one character is typed
-// we can calculate wpm and accuracy
-export const metrics = derived(elapsed, ($elapsed) => {
-  if ($elapsed && get(keystrokes).typedChars.length) {
-    return {
-      accuracy: Math.round(
-        (get(keystrokes).correctChars / get(keystrokes).typedChars.length) * 100
-      ),
-      wpm: Math.floor((get(keystrokes).correctChars / 5 / $elapsed) * 60),
-    };
-  } else {
-    return { accuracy: null, wpm: null };
-  }
-});
+// Metrics
+const defaultMetrics = {
+  accuracy: null,
+  wpm: null,
+};
+export const metrics = writable(defaultMetrics);
+export const resetMetrics = () => metrics.set(defaultMetrics);
 
 // Last session data
 export const sessionData = writable([]); // series of data for the last session
-export const showChart = writable(false); // whether to show the modal with the chart
+export const showChart = writable(false); // whether to show the chart with last session data
 
 // Match
 export const players = writable([]); // the states of remote players
