@@ -2,7 +2,7 @@ import { get } from "svelte/store";
 import { elapsed, interval, timer } from "./stores";
 import { userState } from "./states";
 
-const round = 5; // how many seconds in a round
+const round = process.env.NODE_ENV === "development" ? 10 : 60; // how many seconds in a round
 
 // Update timer with the new elapsed time since last session start
 const updateTimer = () => {
