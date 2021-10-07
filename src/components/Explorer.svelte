@@ -1,34 +1,37 @@
 <script>
-  import { fileUrl, resetKeystrokes } from "../stores.js";
+  import {
+    search,
+    repos,
+    files,
+    repoBaseUrl,
+    repoCurrentUrl,
+    selectedRepo,
+    fileUrl,
+    resetKeystrokes,
+  } from "../stores.js";
   import { userState } from "../states";
   import Loader from "./Loader.svelte";
   import Input from "./Input.svelte";
 
   const searchRepoEndpoint = "https://api.github.com/search/repositories?q=";
-  let search = ""; // content of the search input
-  let repos = []; // list of repos
-  let files = []; // list of files/folders in the selected repo
-  let repoBaseUrl = ""; // base path of the selected repo
-  let repoCurrentUrl = ""; // path of the repos's selected folder
-  let selectedRepo = null; // the selected repo
   let loading = false; // whether the widget il loading something
 
   const toggleLoader = () => (loading = !loading);
   const resetSearch = () => {
-    files = [];
-    repos = [];
-    selectedRepo = null;
+    $files = [];
+    $repos = [];
+    $selectedRepo = null;
   };
 
   // Search repositories
   const handleSearch = () => {
     resetSearch();
-    if (!search) return;
+    if (!$search) return;
 
     toggleLoader();
-    fetch(searchRepoEndpoint + search)
+    fetch(searchRepoEndpoint + $search)
       .then((res) => res.json())
-      .then((data) => (repos = data.items))
+      .then((data) => ($repos = data.items))
       .then(toggleLoader)
       .catch((e) => console.error(e));
   };
@@ -36,13 +39,13 @@
   // Select a repo
   const selectRepo = (repo) => {
     toggleLoader();
-    selectedRepo = repo;
-    repoBaseUrl = repo.contents_url.replace("/{+path}", ""); // replace `{+path}` placeholder
-    repoCurrentUrl = repoBaseUrl;
+    $selectedRepo = repo;
+    $repoBaseUrl = repo.contents_url.replace("/{+path}", ""); // replace `{+path}` placeholder
+    $repoCurrentUrl = $repoBaseUrl;
 
-    fetch(repoBaseUrl)
+    fetch($repoBaseUrl)
       .then((res) => res.json())
-      .then((data) => (files = data))
+      .then((data) => ($files = data))
       .then(toggleLoader)
       .catch((e) => console.error(e));
   };
@@ -50,11 +53,11 @@
   // Change folder (it takes the path of the folder: `/` or `/folder/name`)
   const chageFolder = (path) => {
     toggleLoader();
-    repoCurrentUrl = (repoBaseUrl + path).replace(/\/+$/, ""); // remove trailing slashes
+    $repoCurrentUrl = ($repoBaseUrl + path).replace(/\/+$/, ""); // remove trailing slashes
 
-    fetch(repoCurrentUrl)
+    fetch($repoCurrentUrl)
       .then((res) => res.json())
-      .then((data) => (files = data))
+      .then((data) => ($files = data))
       .then(toggleLoader)
       .catch((e) => console.error(e));
   };
@@ -62,8 +65,8 @@
   // Navigate to parent folder
   const goToParentFolder = () => {
     const path = getRepoPath();
-    repoCurrentUrl = path.substring(0, path.lastIndexOf("/"));
-    chageFolder(repoCurrentUrl);
+    $repoCurrentUrl = path.substring(0, path.lastIndexOf("/"));
+    chageFolder($repoCurrentUrl);
   };
 
   // Select a file
@@ -79,7 +82,7 @@
   };
 
   // Get repo url path
-  const getRepoPath = () => repoCurrentUrl.replace(repoBaseUrl, "");
+  const getRepoPath = () => $repoCurrentUrl.replace($repoBaseUrl, "");
 
   // Debounce function (https://www.freecodecamp.org/news/javascript-debounce-example/)
   const debounce = (func, timeout = 350) => {
@@ -105,7 +108,7 @@
     />
   {:else}
     <Input
-      bind:value={search}
+      bind:value={$search}
       on:input={debounce(handleSearch)}
       placeholder="Seach repositories"
       class="mt-4"
@@ -123,14 +126,14 @@
         <Loader />
       </span>
     {:else}
-      {#if selectedRepo}
+      {#if $selectedRepo}
         <!-- Breadcrumb -->
         <div class="font-bold mt-4 ml-2">
           <span
             class="cursor-pointer hover:underline"
             on:click={() => chageFolder("/")}
           >
-            {selectedRepo.name}
+            {$selectedRepo.name}
           </span>
           {#each getRepoPath().split("/") as token, index}
             <span
@@ -152,10 +155,10 @@
         <hr class="border-highlight mt-4" />
       {/if}
 
-      {#if repos.length && !selectedRepo}
+      {#if $repos.length && !$selectedRepo}
         <!-- Repos list -->
         <ul class="mt-4 max-h-64 overflow-y-auto">
-          {#each repos as repo}
+          {#each $repos as repo}
             <li>
               <div
                 on:click={() => selectRepo(repo)}
@@ -168,10 +171,10 @@
         </ul>
       {/if}
 
-      {#if files.length}
+      {#if $files.length}
         <!-- File list -->
         <ul class="mt-4 max-h-64 overflow-y-auto">
-          {#if repoCurrentUrl !== repoBaseUrl}
+          {#if $repoCurrentUrl !== $repoBaseUrl}
             <li on:click={goToParentFolder}>
               <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
                 ☝
@@ -179,7 +182,7 @@
               </div>
             </li>
           {/if}
-          {#each files as file}
+          {#each $files as file}
             {#if file.type == "file"}
               <li on:click={() => selectFile(file)}>
                 <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">

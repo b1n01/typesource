@@ -37,3 +37,11 @@ export const fileUrl = getStore("file", "");
 
 // Auth
 export const user = getUser(); // the logged in user (null if not logged)
+
+// Explorer
+export const search = writable(""); // content of the search input
+export const repos = writable([]); // list of repos
+export const files = writable([]); // list of files/folders in the selected repo
+export const repoBaseUrl = writable(""); // base path of the selected repo
+export const repoCurrentUrl = writable(""); // path of the repos's selected folder
+export const selectedRepo = writable(null); // the selected repo
