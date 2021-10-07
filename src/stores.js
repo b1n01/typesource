@@ -39,6 +39,10 @@ export const fileUrl = getStore("file", "");
 export const user = getUser(); // the logged in user (null if not logged)
 
 // Explorer
+// NOTE: this stores are so so we can respore the Explorer state
+// when we navigate away and then back to the main page, but is only a
+// nice to have, if this is having troubles move this as local variable
+// of Explorer
 export const search = writable(""); // content of the search input
 export const repos = writable([]); // list of repos
 export const files = writable([]); // list of files/folders in the selected repo
