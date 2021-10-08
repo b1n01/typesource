@@ -1,9 +1,13 @@
 rules_version = '2';
 service cloud.firestore {
+  // Math any database
   match /databases/{database}/documents {
-    match /{document=**} {
-      // Update this
-      allow read, write;
+    // Match the metrics path
+    match /metrics/{metric} {
+      // Allow read if the usert owns the metric is trying to read
+      allow read: if request.auth.uid == resource.data.uid;
+      // Allow write if the user writing a metric he owns 
+      allow write: if request.auth.uid == request.resource.data.uid;
     }
   }
 }
