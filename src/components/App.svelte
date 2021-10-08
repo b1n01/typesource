@@ -38,5 +38,7 @@
       <Stats />
     </Route>
   </div>
-  <Debug />
+  {#if process.env.NODE_ENV === "development"}
+    <Debug />
+  {/if}
 </Router>
