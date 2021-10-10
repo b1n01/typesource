@@ -1,14 +1,14 @@
 <script>
   import { Router, Route } from "svelte-routing";
-  import Nav from "./Nav.svelte";
-  import Editor from "./Editor.svelte";
-  import Explorer from "./Explorer.svelte";
-  import Match from "./Match.svelte";
-  import Debug from "./Debug.svelte";
-  import InfoBox from "./InfoBox.svelte";
-  import Stats from "./Stats.svelte";
-  import Chart from "./Chart.svelte";
-  import Modal from "./common/Modal.svelte";
+  import Nav from "./Nav";
+  import Editor from "./Editor";
+  import Explorer from "./Explorer";
+  import Match from "./Match";
+  import Debug from "./Debug";
+  import InfoBox from "./InfoBox";
+  import Stats from "./Stats";
+  import Chart from "./Chart";
+  import Modal from "./common/Modal";
   import { userState } from "../states";
 </script>
 

@@ -1,8 +1,9 @@
 <script>
   import { fly } from "svelte/transition";
   import { isEqual } from "lodash";
-  import Input from "./common/Input.svelte";
-  import Button from "./common/Button.svelte";
+  import Input from "./common/Input";
+  import Button from "./common/Button";
+  import Box from "./common/Box";
   import { WebrtcProvider } from "y-webrtc";
   import { userState } from "../states";
   import { ydoc } from "../ystores";
@@ -215,7 +216,7 @@
   }
 </script>
 
-<div class="p-4 rounded bg-float text-white flex flex-col">
+<Box class="flex flex-col">
   <h1 class="font-bold">Room</h1>
 
   {#if !$user || $user.isAnonymous}
@@ -287,4 +288,4 @@
       </div>
     {/if}
   {/if}
-</div>
+</Box>

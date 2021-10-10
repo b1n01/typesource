@@ -18,8 +18,8 @@
   import { tick } from "svelte";
   import { db } from "../firebase";
   import { user } from "../stores";
-  import Loader from "./common/Loader.svelte";
-  import Box from "./common/Box.svelte";
+  import Loader from "./common/Loader";
+  import Box from "./common/Box";
 
   let loading = true; // whether is fetching data from the db
   let isEmpty = false; // wheter there are no data to display

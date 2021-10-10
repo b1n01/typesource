@@ -10,8 +10,9 @@
     resetKeystrokes,
   } from "../stores";
   import { userState } from "../states";
-  import Loader from "./common/Loader.svelte";
-  import Input from "./common/Input.svelte";
+  import Loader from "./common/Loader";
+  import Box from "./common/Box";
+  import Input from "./common/Input";
 
   const searchRepoEndpoint = "https://api.github.com/search/repositories?q=";
   let loading = false; // whether the widget il loading something
@@ -96,7 +97,7 @@
   };
 </script>
 
-<main class="p-4 rounded bg-float text-white flex flex-col">
+<Box class="flex flex-col">
   <h1 class="font-bold">Search file on github repositories</h1>
 
   {#if $userState.matches("online.playing")}
@@ -203,4 +204,4 @@
       {/if}
     {/if}
   {/if}
-</main>
+</Box>

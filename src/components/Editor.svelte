@@ -4,6 +4,7 @@
   import { keystrokes, position, players, fileUrl } from "../stores";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
+  import Box from "./common/Box";
   import monacoConfig from "../monaco.config";
 
   let editor = null; // the editor
@@ -272,9 +273,11 @@
   });
 </script>
 
-<div class="autoHeight p-8 rounded bg-float">
-  <div bind:this={editorRef} class="h-full w-full" id="monaco" />
-</div>
+<Box>
+  <div class="autoHeight p-4">
+    <div bind:this={editorRef} class="h-full w-full" id="monaco" />
+  </div>
+</Box>
 
 <style>
   .autoHeight {
