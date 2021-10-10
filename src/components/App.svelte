@@ -8,7 +8,7 @@
   import InfoBox from "./InfoBox.svelte";
   import Stats from "./Stats.svelte";
   import Chart from "./Chart.svelte";
-  import Modal from "./Modal.svelte";
+  import Modal from "./common/Modal.svelte";
   import { userState } from "../states";
 </script>
 

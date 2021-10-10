@@ -1,8 +1,8 @@
 <script>
   import { fly } from "svelte/transition";
   import { isEqual } from "lodash";
-  import Input from "./Input.svelte";
-  import Button from "./Button.svelte";
+  import Input from "./common/Input.svelte";
+  import Button from "./common/Button.svelte";
   import { WebrtcProvider } from "y-webrtc";
   import { userState } from "../states";
   import { ydoc } from "../ystores";

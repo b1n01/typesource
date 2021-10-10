@@ -1,5 +1,5 @@
 <script>
-  import Box from "./Box";
+  import Box from "./common/Box";
   import { tick } from "svelte";
   import { sessionData } from "../stores";
   import { userState } from "../states";

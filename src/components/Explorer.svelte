@@ -10,8 +10,8 @@
     resetKeystrokes,
   } from "../stores.js";
   import { userState } from "../states";
-  import Loader from "./Loader.svelte";
-  import Input from "./Input.svelte";
+  import Loader from "./common/Loader.svelte";
+  import Input from "./common/Input.svelte";
 
   const searchRepoEndpoint = "https://api.github.com/search/repositories?q=";
   let loading = false; // whether the widget il loading something
