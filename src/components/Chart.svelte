@@ -3,7 +3,7 @@
   import { tick } from "svelte";
   import { sessionData } from "../stores";
   import { userState } from "../states";
-  import { getOptions, getChart } from "../chart";
+  import { getOptions, getChart, getWpmSet, getAccuracySet } from "../chart";
 
   const lastData = $sessionData[$sessionData.length - 1];
 
@@ -18,7 +18,11 @@
       labels.push(key + 1);
     });
 
-    getChart(canvas, series, labels, getOptions());
+    const wpmSet = getWpmSet(series.wpm);
+    const accSet = getAccuracySet(series.acc);
+    const datasets = [wpmSet, accSet];
+
+    getChart(canvas, datasets, labels, getOptions());
   });
 
   const closeChart = () => {

@@ -6,12 +6,20 @@
     orderBy,
     getDocs,
   } from "firebase/firestore";
+  import {
+    getOptions,
+    getChart,
+    getWpmSet,
+    getAccuracySet,
+    getSessionsSet,
+    getSessionsAxis,
+    getDateTitleTooltip,
+  } from "../chart";
   import { tick } from "svelte";
   import { db } from "../firebase";
   import { user } from "../stores";
   import Loader from "./Loader.svelte";
   import Box from "./Box.svelte";
-  import { getOptions, getChart } from "../chart";
 
   let loading = true; // whether is fetching data from the db
   let isEmpty = false; // wheter there are no data to display
@@ -19,17 +27,10 @@
   let totalStats = []; // stats to be rendered with total data
   let today = new Date().toLocaleDateString("en-US");
 
-  let chartOptions = getOptions();
-  chartOptions.plugins.tooltip.callbacks.title = (context) => {
-    // Format tooltip title date
-    let date = new Date(context[0].label);
-    let options = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    };
-    return date.toLocaleDateString("en-US", options);
-  };
+  let chartOptions = getOptions({
+    ...getSessionsAxis(),
+    ...getDateTitleTooltip(),
+  });
 
   // Get empty stats
   function initStats() {
@@ -148,8 +149,13 @@
       series.acc.push(sessions ? Math.round(accuracy / sessions) : 0);
     }
 
+    const wpmSet = getWpmSet(series.wpm);
+    const accSet = getAccuracySet(series.acc);
+    const sessionsSet = getSessionsSet(series.sessions);
+    const datasets = [wpmSet, accSet, sessionsSet];
+
     const canvas = document.getElementById("chart");
-    return getChart(canvas, series, labels, chartOptions);
+    return getChart(canvas, datasets, labels, chartOptions);
   };
 </script>
 
