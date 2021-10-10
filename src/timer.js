@@ -1,8 +1,9 @@
 import { get } from "svelte/store";
-import { elapsed, interval, timer } from "./stores";
+import { elapsed, timer } from "./stores";
 import { userState } from "./states";
 
 const round = process.env.NODE_ENV === "development" ? 8 : 30; // how many seconds in a round
+let interval = null; // id of the current timer interval
 
 // Update timer with the new elapsed time since last session start
 const updateTimer = () => {
@@ -34,17 +35,17 @@ export const init = () => {
 
 // Start the timer
 export const start = () => {
-  interval.set(setInterval(updateTimer, 1000));
+  interval = setInterval(updateTimer, 1000);
 };
 
 // Pause the timer
 export const pause = () => {
-  clearInterval(get(interval));
+  clearInterval(interval);
 };
 
 // Stop the timer
 export const stop = () => {
   timer.set("-");
   elapsed.set(0);
-  clearInterval(get(interval));
+  clearInterval(interval);
 };

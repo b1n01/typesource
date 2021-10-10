@@ -7,7 +7,6 @@ export const position = writable({ lineNumber: 1, column: 1 }); // player cursor
 
 // Timer
 export const elapsed = writable(0); // how many seconds since timer start
-export const interval = writable(null); // id of the current timer interval
 export const timer = writable("-"); // timer in the format `-`
 
 // Keystrokes
