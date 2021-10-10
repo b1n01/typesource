@@ -273,8 +273,8 @@
   });
 </script>
 
-<Box>
-  <div class="autoHeight p-4">
+<Box class="p-0">
+  <div class="autoHeight p-8">
     <div bind:this={editorRef} class="h-full w-full" id="monaco" />
   </div>
 </Box>
