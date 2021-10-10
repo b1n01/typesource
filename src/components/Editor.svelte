@@ -1,7 +1,7 @@
 <script>
   import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
   import { onDestroy, tick } from "svelte";
-  import { keystrokes, position, players, fileUrl } from "../stores.js";
+  import { keystrokes, position, players, fileUrl } from "../stores";
   import { getLanguageFromUrl } from "../utils";
   import { userState } from "../states";
   import monacoConfig from "../monaco.config";

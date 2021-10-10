@@ -8,7 +8,7 @@
     selectedRepo,
     fileUrl,
     resetKeystrokes,
-  } from "../stores.js";
+  } from "../stores";
   import { userState } from "../states";
   import Loader from "./common/Loader.svelte";
   import Input from "./common/Input.svelte";
