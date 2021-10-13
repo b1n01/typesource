@@ -32,7 +32,7 @@ And (in a different terminal window) the Firebase emulator:
 firebase emulators:start
 ```
 
-Now Typesource is served on [http://localhost:8080](http://localhost:8080) and the Firebase emulator UI on [http://localhost:4000](http://localhost:4000).
+Typesource and the Firebase Emulator UI are now served locally (check the teminal to see ports number).
 
 ---
 
@@ -42,10 +42,16 @@ To create a production build run:
 npm run build
 ```
 
-And to update Firestore Rules update the `firestore.rules` file (if you do so while the emulator is running you get rules validation in real time) and run:
+To update Firestore Rules update the `firestore.rules` file (if you do so while the emulator is running you get rules validation in real time) and run:
 
 ```bash
-firebase deploy --only firestore
+firebase deploy --only firestore:rules
+```
+
+And to update Firestore Indexes update the `firestore.indexes.json` file and run:
+
+```bash
+firebase deploy --only firestore:indexes
 ```
 
 ### Overview
