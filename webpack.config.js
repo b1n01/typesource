@@ -79,7 +79,12 @@ module.exports = {
       // see https://github.com/microsoft/monaco-editor-webpack-plugin
       //features: ['accessibilityHelp', 'anchorSelect', 'bracketMatching', 'caretOperations', 'clipboard', 'codeAction', 'codelens', 'colorPicker', 'comment', 'contextmenu', 'coreCommands', 'cursorUndo', 'dnd', 'documentSymbols', 'find', 'folding', 'fontZoom', 'format', 'gotoError', 'gotoLine', 'gotoSymbol', 'hover', 'iPadShowKeyboard', 'inPlaceReplace', 'indentation', 'inlineHints', 'inspectTokens', 'linesOperations', 'linkedEditing', 'links', 'multicursor', 'parameterHints', 'quickCommand', 'quickHelp', 'quickOutline', 'referenceSearch', 'rename', 'smartSelect', 'snippets', 'suggest', 'toggleHighContrast', 'toggleTabFocusMode', 'transpose', 'unusualLineTerminators', 'viewportSemanticTokens', 'wordHighlighter', 'wordOperations', 'wordPartOperations']
     }),
-    new Dotenv(),
+    new Dotenv({
+      // Load system env variables if any.
+      // This is needed to deploy to server where env variables are
+      //  not set with a .env file (Netlify)
+      systemvars: true,
+    }),
   ],
   devtool: prod ? false : "source-map",
   devServer: {
