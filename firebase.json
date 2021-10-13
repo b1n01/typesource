@@ -3,11 +3,11 @@
     "auth": {
       "port": 9990
     },
-    "ui": {
-      "enabled": true
-    },
     "firestore": {
       "port": 9991
+    },
+    "ui": {
+      "enabled": true
     }
   },
   "firestore": {

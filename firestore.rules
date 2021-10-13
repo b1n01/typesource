@@ -4,9 +4,17 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Match the metrics path
     match /metrics/{metric} {
-      // Allow read if the usert owns the metric is trying to read
+      // Allow read if the user owns the metric is trying to read
       allow read: if request.auth.uid == resource.data.uid;
       // Allow write if the user writing a metric he owns 
+      allow write: if request.auth.uid == request.resource.data.uid;
+    }
+
+    // Match the users path
+    match /users/{user} {
+      // Allow read if the user is fetching itself
+      allow read: if request.auth.uid == resource.data.uid;
+      // Allow write if the user is updating itself
       allow write: if request.auth.uid == request.resource.data.uid;
     }
   }
