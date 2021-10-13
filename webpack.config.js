@@ -83,6 +83,7 @@ module.exports = {
       // Load system env variables if any.
       // This is needed to deploy to server where env variables are
       //  not set with a .env file (Netlify)
+      // See https://github.com/mrsteele/dotenv-webpack#properties
       systemvars: true,
     }),
   ],
