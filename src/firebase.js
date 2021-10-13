@@ -23,12 +23,10 @@ import {
 
 // Initialize the firebase app
 const firebase = initializeApp({
-  apiKey: "AIzaSyC3oY0YGywi1nXOqqlyK6EdBd5JOEUMAx8",
-  authDomain: "typesource-d7cc5.firebaseapp.com",
-  projectId: "typesource-d7cc5",
-  storageBucket: "typesource-d7cc5.appspot.com",
-  messagingSenderId: "360526879897",
-  appId: "1:360526879897:web:7a06f1c0f590702ed8ac08",
+  apiKey: process.env.FIREBASE_API_KEY,
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  appId: process.env.FIREBASE_APP_ID,
 });
 
 // Init firestore db and setup local emulator

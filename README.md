@@ -10,9 +10,13 @@ Typesource let's you practice your touch typing skills on real world code. **Che
 
 ## Development
 
-To spin up Typesource locally just clone this repository and follow these steps:
+First of all you need to install the [Firebase CLI](https://firebase.google.com/docs/cli), this will allow you to use the Firebase emulators and sync your development project with the production one. You need to create a Firebase project with a Firestore database and the Authentication system enabled.
 
-> You need [Firebase CLI](https://firebase.google.com/docs/cli) installed and configured on your machine
+Once you have your Firebase project credentias you need to set them as local environment variables. You can copy the `.env.dist` file into the `.env` file and update the example content:
+
+```bash
+cp .env.dist .env
+```
 
 Install dependencies:
 
@@ -36,12 +40,6 @@ Typesource and the Firebase Emulator UI are now served locally (check the temina
 
 ---
 
-To create a production build run:
-
-```bash
-npm run build
-```
-
 To update Firestore Rules update the `firestore.rules` file (if you do so while the emulator is running you get rules validation in real time) and run:
 
 ```bash
@@ -53,6 +51,14 @@ And to update Firestore Indexes update the `firestore.indexes.json` file and run
 ```bash
 firebase deploy --only firestore:indexes
 ```
+
+To create a production build run:
+
+```bash
+npm run build
+```
+
+Thank to the `_redirects` file in the public folder you can deploy the project directly to [Netlify](https://netlify.com).
 
 ### Overview
 
