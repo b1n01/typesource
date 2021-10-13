@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 const path = require("path");
 
 const mode = process.env.NODE_ENV || "development";
@@ -78,6 +79,7 @@ module.exports = {
       // see https://github.com/microsoft/monaco-editor-webpack-plugin
       //features: ['accessibilityHelp', 'anchorSelect', 'bracketMatching', 'caretOperations', 'clipboard', 'codeAction', 'codelens', 'colorPicker', 'comment', 'contextmenu', 'coreCommands', 'cursorUndo', 'dnd', 'documentSymbols', 'find', 'folding', 'fontZoom', 'format', 'gotoError', 'gotoLine', 'gotoSymbol', 'hover', 'iPadShowKeyboard', 'inPlaceReplace', 'indentation', 'inlineHints', 'inspectTokens', 'linesOperations', 'linkedEditing', 'links', 'multicursor', 'parameterHints', 'quickCommand', 'quickHelp', 'quickOutline', 'referenceSearch', 'rename', 'smartSelect', 'snippets', 'suggest', 'toggleHighContrast', 'toggleTabFocusMode', 'transpose', 'unusualLineTerminators', 'viewportSemanticTokens', 'wordHighlighter', 'wordOperations', 'wordPartOperations']
     }),
+    new Dotenv(),
   ],
   devtool: prod ? false : "source-map",
   devServer: {
