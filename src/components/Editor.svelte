@@ -273,14 +273,14 @@
   });
 </script>
 
-<Box class="p-0">
-  <div class="autoHeight p-8">
+<Box>
+  <div class="autoHeight p-4">
     <div bind:this={editorRef} class="h-full w-full" id="monaco" />
   </div>
 </Box>
 
 <style>
   .autoHeight {
-    height: calc(100vh - 128px); /* full height minus header and margins */
+    height: calc(100vh - 160px); /* full height minus header and margins */
   }
 </style>
