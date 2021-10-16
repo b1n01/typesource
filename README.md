@@ -15,7 +15,7 @@ First of all you need to install the [Firebase CLI](https://firebase.google.com/
 Once you have your Firebase project credentias you need to set them as local environment variables. You can copy the `.env.dist` file into the `.env` file and update the example content:
 
 ```bash
-cp .env.dist .env
+cp .env.example .env
 ```
 
 Install dependencies:
