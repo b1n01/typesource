@@ -3,24 +3,29 @@ const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 const Dotenv = require("dotenv-webpack");
 const path = require("path");
 
-const mode = process.env.NODE_ENV || "development";
-const prod = mode === "production";
+const env = process.env.NODE_ENV || "development";
+const isProd = env === "production";
 
 module.exports = {
-  entry: {
-    "build/bundle": ["./src/main.js"],
-  },
+  // Set build mode and sets process.env.NODE_ENV
+  mode: env,
+  // Enable debugging while developing
+  devtool: isProd ? false : "source-map",
+  // Use src/main.js entrypoint and output in build/bundle.js
+  entry: { "build/bundle": ["./src/main.js"] },
+  // Svelte configurations, see https://github.com/sveltejs/svelte-loader
   resolve: {
     alias: {
-      svelte: path.dirname(require.resolve("svelte/package.json")),
+      svelte: path.resolve("node_modules", "svelte"),
     },
     extensions: [".mjs", ".js", ".svelte"],
     mainFields: ["svelte", "browser", "module", "main"],
   },
   output: {
-    path: path.join(__dirname, "/public"),
-    filename: "[name].js",
-    chunkFilename: "build/chunks/[name].[id].js",
+    // Set "public" as the output folder
+    path: path.resolve(__dirname, "public"),
+    // Put js chunks in build/chunks
+    chunkFilename: "build/chunks/[name].js",
   },
   module: {
     rules: [
@@ -30,10 +35,10 @@ module.exports = {
           loader: "svelte-loader",
           options: {
             compilerOptions: {
-              dev: !prod,
+              dev: !isProd,
             },
-            emitCss: prod,
-            hotReload: !prod,
+            emitCss: isProd,
+            hotReload: !isProd,
           },
         },
       },
@@ -71,26 +76,15 @@ module.exports = {
     ],
   },
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: "[name].css",
-    }),
+    new MiniCssExtractPlugin({}),
     new MonacoWebpackPlugin({
-      filename: "./build/workers/[name].worker.js", // output workers on build folder
-      // see https://github.com/microsoft/monaco-editor-webpack-plugin
-      //features: ['accessibilityHelp', 'anchorSelect', 'bracketMatching', 'caretOperations', 'clipboard', 'codeAction', 'codelens', 'colorPicker', 'comment', 'contextmenu', 'coreCommands', 'cursorUndo', 'dnd', 'documentSymbols', 'find', 'folding', 'fontZoom', 'format', 'gotoError', 'gotoLine', 'gotoSymbol', 'hover', 'iPadShowKeyboard', 'inPlaceReplace', 'indentation', 'inlineHints', 'inspectTokens', 'linesOperations', 'linkedEditing', 'links', 'multicursor', 'parameterHints', 'quickCommand', 'quickHelp', 'quickOutline', 'referenceSearch', 'rename', 'smartSelect', 'snippets', 'suggest', 'toggleHighContrast', 'toggleTabFocusMode', 'transpose', 'unusualLineTerminators', 'viewportSemanticTokens', 'wordHighlighter', 'wordOperations', 'wordPartOperations']
+      // Output workers on build folder
+      filename: "build/workers/[name].worker.js",
     }),
     new Dotenv({
-      // Load system env variables if any.
-      // This is needed to deploy to server where env variables are
-      //  not set with a .env file (Netlify)
-      // See https://github.com/mrsteele/dotenv-webpack#properties
+      // Load system env variables if any. This is needed to deploy to
+      // servers where env variables are not set with a .env file (Netlify)
       systemvars: true,
     }),
   ],
-  devtool: prod ? false : "source-map",
-  devServer: {
-    hot: true,
-    historyApiFallback: true,
-  },
-  mode,
 };
