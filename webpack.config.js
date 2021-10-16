@@ -80,6 +80,8 @@ module.exports = {
     new MonacoWebpackPlugin({
       // Output workers on build folder
       filename: "build/workers/[name].worker.js",
+      // Enable specific features
+      // features: [],
     }),
     new Dotenv({
       // Load system env variables if any. This is needed to deploy to
