@@ -1,5 +1,6 @@
 <script>
   import {
+    user,
     search,
     repos,
     files,
@@ -9,6 +10,8 @@
     fileUrl,
     resetKeystrokes,
   } from "../stores";
+  import { collection, query, where, getDocs } from "firebase/firestore";
+  import { db } from "../firebase";
   import { userState } from "../states";
   import Loader from "./common/Loader";
   import Box from "./common/Box";
@@ -16,6 +19,7 @@
 
   const searchRepoEndpoint = "https://api.github.com/search/repositories?q=";
   let loading = false; // whether the widget il loading something
+  let accessToken = null; // github accessToken for the logged user
 
   const toggleLoader = () => (loading = !loading);
   const resetSearch = () => {
@@ -24,13 +28,36 @@
     $selectedRepo = null;
   };
 
+  // When the user is ready fetch its accessToken
+  $: if ($user) {
+    const usersColl = collection(db, "users");
+    const select = query(usersColl, where("uid", "==", $user.uid));
+
+    getDocs(select).then((users) => {
+      accessToken = users.size ? users.docs[0].data().accessToken : null;
+      if (users.docs.size > 1) {
+        console.error("Found more than one user with the same uid");
+      }
+    });
+  }
+
+  // Decorate the request with the authorization header
+  const req = (url) => {
+    let options = {};
+    if (process.env.NODE_ENV !== "development" && accessToken) {
+      options = { headers: { Authorization: "token " + accessToken } };
+    }
+
+    return fetch(url, options);
+  };
+
   // Search repositories
   const handleSearch = () => {
     resetSearch();
     if (!$search) return;
 
     toggleLoader();
-    fetch(searchRepoEndpoint + $search)
+    req(searchRepoEndpoint + $search)
       .then((res) => res.json())
       .then((data) => ($repos = data.items))
       .then(toggleLoader)
@@ -44,7 +71,7 @@
     $repoBaseUrl = repo.contents_url.replace("/{+path}", ""); // replace `{+path}` placeholder
     $repoCurrentUrl = $repoBaseUrl;
 
-    fetch($repoBaseUrl)
+    req($repoBaseUrl)
       .then((res) => res.json())
       .then((data) => ($files = data))
       .then(toggleLoader)
@@ -56,7 +83,7 @@
     toggleLoader();
     $repoCurrentUrl = ($repoBaseUrl + path).replace(/\/+$/, ""); // remove trailing slashes
 
-    fetch($repoCurrentUrl)
+    req($repoCurrentUrl)
       .then((res) => res.json())
       .then((data) => ($files = data))
       .then(toggleLoader)
