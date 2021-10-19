@@ -26,6 +26,7 @@
   let todayStats = []; // stats to be rendered whith today data
   let totalStats = []; // stats to be rendered with total data
   let today = new Date().toLocaleDateString("en-US");
+  let chart = null; // the chart object
 
   let chartOptions = getOptions({
     ...getSessionsAxis(),
@@ -60,9 +61,10 @@
       // Set loading to false and wait a tick to let svelte
       // draw the html to then render the chart
       loading = false;
+
       tick().then(() => {
         calculateStats(metrics);
-        drawChart(metrics);
+        chart = drawChart(metrics);
       });
     });
   }
@@ -115,6 +117,9 @@
 
   // Render the chart
   const drawChart = (metrics) => {
+    // If the chars has already been drawn once destroy it
+    if (chart) chart.destroy();
+
     if (metrics.size == 0) {
       // If no metrics then show empty state and do not try to run the chart
       // otherwise will get an error because the canvas is not rendered
