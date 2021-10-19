@@ -11,6 +11,10 @@ module.exports = {
   mode: env,
   // Enable debugging while developing
   devtool: isProd ? false : "source-map",
+  // Enable SPA routing
+  devServer: {
+    historyApiFallback: true,
+  },
   // Use src/main.js entrypoint and output in build/bundle.js
   entry: { "build/bundle": ["./src/main.js"] },
   // Svelte configurations, see https://github.com/sveltejs/svelte-loader
