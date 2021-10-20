@@ -222,7 +222,7 @@
   {#if !$user || $user.isAnonymous}
     <p class="mt-1">Signin to create a room</p>
   {:else if !roomKey}
-    <Button label="Create a room" class="mt-4" on:click={createRoom} />
+    <Button class="mt-4" on:click={createRoom}>Create a room</Button>
   {:else}
     <div class="flex mt-4">
       <Input value={getRoomUrl()} readonly>
@@ -240,7 +240,7 @@
           {/if}
         </span>
       </Input>
-      <Button label="Leave" class="ml-4" danger on:click={leaveRoom} />
+      <Button class="ml-4" danger on:click={leaveRoom}>Leave</Button>
     </div>
 
     <div class="flex items-center mt-4">
@@ -253,11 +253,11 @@
     </div>
     <div class="mt-4">
       {#if $fileUrl && $userState.matches("online.lobby")}
-        <Button label="I'm Ready" on:click={setUserAsReady} />
+        <Button on:click={setUserAsReady}>I'm Ready</Button>
       {:else if $userState.matches("online.finished")}
-        <Button label="Restart" on:click={restartMatch} />
+        <Button on:click={restartMatch}>Restart</Button>
       {:else}
-        <Button label="I'm Ready" disabled />
+        <Button disabled>I'm Ready</Button>
       {/if}
 
       <span class="ml-4">

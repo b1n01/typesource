@@ -1,5 +1,4 @@
 <script>
-  export let label = ""; // button text
   export let danger = false; // use a 'danger' style
   export let disabled = false; // use 'disable' style
 
@@ -21,5 +20,5 @@
   class="border py-2 px-4 rounded focus:outline-none {style} {propClass}"
   on:click
 >
-  {label}
+  <slot />
 </button>

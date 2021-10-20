@@ -9,6 +9,7 @@
   import Stats from "./Stats";
   import Chart from "./Chart";
   import Modal from "./common/Modal";
+  import Signin from "./Signin";
   import { userState } from "../states";
 </script>
 
@@ -36,6 +37,9 @@
     </Route>
     <Route path="stats">
       <Stats />
+    </Route>
+    <Route path="signin">
+      <Signin />
     </Route>
   </div>
   {#if process.env.NODE_ENV === "development"}
