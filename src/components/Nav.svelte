@@ -1,6 +1,6 @@
 <script>
   import { Link } from "svelte-routing";
-  import { login, logout } from "../firebase";
+  import { logout } from "../firebase";
   import { user } from "../stores";
 </script>
 
@@ -14,7 +14,7 @@
         {#if !$user.isAnonymous}
           <li class="pl-2 cursor-pointer" on:click={logout}>Logout</li>
         {:else}
-          <li class="cursor-pointer" on:click={login}>Signin</li>
+          <li class="px-4"><Link to="/signin">Signin</Link></li>
         {/if}
       {/if}
     </ul>
