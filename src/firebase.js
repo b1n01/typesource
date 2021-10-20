@@ -98,6 +98,7 @@ const hanldeSignIn = async (response) => {
         accessToken: accessToken,
         uid: loggedUser.uid,
       });
+      return user;
     } catch (e) {
       console.error("Error adding user access token.", e);
     }
@@ -107,6 +108,7 @@ const hanldeSignIn = async (response) => {
       await updateDoc(loggedUser.ref, {
         accessToken: accessToken,
       });
+      return user;
     } catch (e) {
       console.error("Error updating user access token.", e);
     }
@@ -114,23 +116,25 @@ const hanldeSignIn = async (response) => {
 };
 
 // Function to login/signup an user via Github
-const login = () => {
+const login = async () => {
   const provider = new GithubAuthProvider();
 
-  linkWithPopup(auth.currentUser, provider)
-    .then(hanldeSignIn)
-    .catch((e) => {
-      console.log("Error while linking anon. account", e);
+  try {
+    let response = await linkWithPopup(auth.currentUser, provider);
+    return hanldeSignIn(response);
+  } catch (e) {
+    console.log("Error while linking anon. account", e);
 
-      if (e.code === "auth/credential-already-in-use") {
+    if (e.code === "auth/credential-already-in-use") {
+      try {
         const credential = GithubAuthProvider.credentialFromError(e);
-        signInWithCredential(auth, credential)
-          .then(hanldeSignIn)
-          .catch((e) => {
-            console.error("Error while signin in.", e);
-          });
+        let response = signInWithCredential(auth, credential);
+        return hanldeSignIn(response);
+      } catch (e) {
+        console.error("Error while signin in.", e);
       }
-    });
+    }
+  }
 };
 
 // Logout the current user
