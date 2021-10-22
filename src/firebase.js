@@ -128,7 +128,7 @@ const login = async () => {
     if (e.code === "auth/credential-already-in-use") {
       try {
         const credential = GithubAuthProvider.credentialFromError(e);
-        let response = signInWithCredential(auth, credential);
+        let response = await signInWithCredential(auth, credential);
         return hanldeSignIn(response);
       } catch (e) {
         console.error("Error while signin in.", e);
