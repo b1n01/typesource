@@ -8,9 +8,11 @@
   import monacoConfig from "../monaco.config";
 
   let editor = null; // the editor
-  let decorations = []; // decoration to gray out the content not already typed
+  let decorations = []; // editor decorations (gray our text and errors)
   let playersCursors = []; // decoration to show remote players position
   let editorRef = null; // reference to the editor div
+  let errorPositions = []; // keep the position of all errors
+  let startPosition = null; // store the position where the usert starts the session
 
   // Reset position to 1, 1
   const resetPosition = () => ($position = { lineNumber: 1, column: 1 });
@@ -24,24 +26,48 @@
     );
   };
 
-  // This function updates the decoration with the local position(grayed out text)
-  const updateDecoration = (position) => {
-    setDecoration(position.lineNumber, position.column, 1000, 1000);
-  };
+  // This function will update editor decorations for text not alreay
+  // typed (gray) and for errors (red)
+  const updateDecorations = () => {
+    if (!["offline.active", "online.playing"].some($userState.matches)) {
+      return;
+    }
 
-  // Remove decoration (grayed out text)
-  const removeDecoration = () => {
-    setDecoration(1000, 1000, 1000, 1000);
-  };
+    let newDecorations = [];
 
-  // Set decoration (grayed out text)
-  const setDecoration = (...positions) => {
-    decorations = editor.deltaDecorations(decorations, [
-      {
-        options: { inlineClassName: "grayedOut" },
-        range: new monaco.Range(...positions),
-      },
-    ]);
+    newDecorations.push({
+      options: { inlineClassName: "grayedOut" },
+      range: new monaco.Range(
+        1,
+        1,
+        startPosition.lineNumber,
+        startPosition.column - 1
+      ),
+    });
+
+    newDecorations = newDecorations.concat(
+      errorPositions.map((pos) => ({
+        options: { inlineClassName: "error" },
+        range: new monaco.Range(
+          pos.lineNumber,
+          pos.column - 1,
+          pos.lineNumber,
+          pos.column
+        ),
+      }))
+    );
+
+    newDecorations.push({
+      options: { inlineClassName: "grayedOut" },
+      range: new monaco.Range(
+        $position.lineNumber,
+        $position.column,
+        1000,
+        1000
+      ),
+    });
+
+    decorations = editor.deltaDecorations(decorations, newDecorations);
   };
 
   // Hide 'cannot edit in read-only editor' tooltip
@@ -113,6 +139,8 @@
         )
       ) {
         userState.send("START");
+        startPosition = $position;
+        errorPositions = [];
       }
 
       if (!["offline.active", "online.playing"].some($userState.matches)) {
@@ -133,9 +161,10 @@
       // If the user typed the correct character move one position to the right
       if (nextChar === typedKey) {
         $position.column++;
-        editor.setPosition($position);
-        updateDecoration($position);
+        // editor.setPosition($position);
         correctChars = $keystrokes.correctChars + 1;
+      } else {
+        errorPositions.push($position);
       }
 
       // Update typed characters and correctChars atomically
@@ -252,20 +281,20 @@
   // Update remote players cursors
   $: editor && $players && updateCursors();
 
-  // When the match finishes remove pl;ayers cursors
+  // When the match finishes remove players cursors
   $: editor && $userState.matches("online.finished") && removeCursors();
+
+  // Reset decoration (gray text) when the match finishes
+  $: editor && $userState.matches("online.finished") && resetPosition();
 
   // Update local editor position
   $: editor && $position && updateLocalPosition();
 
-  // Update the editor decoration (gray text)
-  // (the offline decoration is triggered by a keypress)
-  $: editor &&
-    $userState.matches("online.playing") &&
-    updateDecoration($position);
+  // When the position changes update the decorations
+  $: editor && $position && updateDecorations();
 
-  // Reset decoration (gray text) when the match finishes
-  $: editor && $userState.matches("online.finished") && removeDecoration();
+  // Update editor position when the position changes
+  $: editor && $position && editor.setPosition($position);
 
   // Remove listeners when component is destroyed
   onDestroy(() => {

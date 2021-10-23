@@ -5,7 +5,10 @@
 /* Monaco customization */
 .grayedOut {
   color: gray !important;
-  font-weight: 400 !important;
+}
+
+.error {
+  color: rgb(220, 45, 45) !important;
 }
 
 .cursor {
