@@ -25,7 +25,7 @@ export default {
     theme: customTheme,
     automaticLayout: true, // automaticaly resize
     fontFamily: "Fira Code", // default font family
-    fontSize: 14, // sefault font size
+    fontSize: 16, // sefault font size
     minimap: { enabled: false }, // hide minimap
     scrollbar: { vertical: "hidden", horizontal: "hidden" }, // hide scrollbars
     acceptSuggestionOnCommitCharacter: false, // dont accept suggestions on provider defined character
