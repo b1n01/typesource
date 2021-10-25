@@ -131,14 +131,17 @@
   // Catch user keypress and check if the cursor should move
   const handleTyping = () => {
     editor.onKeyDown((e) => {
+      if (["offline.inactive", "offline.stopped"].some($userState.matches)) {
+        startPosition = $position;
+        errorPositions = [];
+      }
+
       if (
         ["offline.inactive", "offline.paused", "offline.stopped"].some(
           $userState.matches
         )
       ) {
         userState.send("START");
-        startPosition = $position;
-        errorPositions = [];
       }
 
       const typedKey = e.browserEvent.key; // typed key
@@ -296,16 +299,23 @@
 
   // When the user state goes from ended to inactive (closes the end session chart)
   // set focus on the editor to let the user starts a new match easily
-  const unsubscribeUsetState = userState.subscribe((state) => {
+  const unsubscribeUserState = userState.subscribe((state) => {
     const wasEnded = state.history && state.history.matches("offline.ended");
     const isInactive = state.matches("offline.inactive");
     if (editor && wasEnded && isInactive) editor.focus();
+
+    // When a match ends remove focus from the editor so no new type are registered
+    // see https://github.com/microsoft/monaco-editor/issues/307#issuecomment-272398610
+    if (editor && state.matches("offline.ended") && editor.hasTextFocus()) {
+      document.activeElement.blur();
+    }
   });
 
   // Remove listeners when component is destroyed
   onDestroy(() => {
     document.onkeydown = null;
-    unsubscribeUsetState();
+    // This check is needed to avoid development error with webpack hot-reload
+    if (typeof unsubscribeUserState === "function") unsubscribeUserState();
   });
 </script>
 
