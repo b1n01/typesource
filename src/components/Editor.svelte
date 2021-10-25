@@ -131,8 +131,6 @@
   // Catch user keypress and check if the cursor should move
   const handleTyping = () => {
     editor.onKeyDown((e) => {
-      const typedKey = e.browserEvent.key; // typed key
-
       if (
         ["offline.inactive", "offline.paused", "offline.stopped"].some(
           $userState.matches
@@ -143,7 +141,8 @@
         errorPositions = [];
       }
 
-      if (!["offline.active", "online.playing"].some($userState.matches)) {
+      const typedKey = e.browserEvent.key; // typed key
+      if (["Shift", "Control", "Alt", "Meta"].includes(typedKey)) {
         return;
       }
 
@@ -161,7 +160,6 @@
       // If the user typed the correct character move one position to the right
       if (nextChar === typedKey) {
         $position.column++;
-        // editor.setPosition($position);
         correctChars = $keystrokes.correctChars + 1;
       } else {
         errorPositions.push($position);
