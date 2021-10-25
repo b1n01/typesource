@@ -294,15 +294,24 @@
   // Update editor position when the position changes
   $: editor && $position && editor.setPosition($position);
 
+  // When the user state goes from ended to inactive (closes the end session chart)
+  // set focus on the editor to let the user starts a new match easily
+  const unsubscribeUsetState = userState.subscribe((state) => {
+    const wasEnded = state.history && state.history.matches("offline.ended");
+    const isInactive = state.matches("offline.inactive");
+    if (editor && wasEnded && isInactive) editor.focus();
+  });
+
   // Remove listeners when component is destroyed
   onDestroy(() => {
     document.onkeydown = null;
+    unsubscribeUsetState();
   });
 </script>
 
 <Box>
   <div class="autoHeight p-4">
-    <div bind:this={editorRef} class="h-full w-full" id="monaco" />
+    <div bind:this={editorRef} class="h-full w-full" id="monaco" tabindex="0" />
   </div>
 </Box>
 
