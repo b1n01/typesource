@@ -13,6 +13,7 @@
   let editorRef = null; // reference to the editor div
   let errorPositions = []; // keep the position of all errors
   let startPosition = null; // store the position where the usert starts the session
+  const altKeys = ["Shift", "Control", "Alt", "CapsLock", "Backspace"]; // keys that we should not consider as typed keys
 
   // Reset position to 1, 1
   const resetPosition = () => ($position = { lineNumber: 1, column: 1 });
@@ -145,7 +146,7 @@
       }
 
       const typedKey = e.browserEvent.key; // typed key
-      if (["Shift", "Control", "Alt", "Meta"].includes(typedKey)) {
+      if (altKeys.includes(typedKey)) {
         return;
       }
 
