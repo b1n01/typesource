@@ -138,9 +138,12 @@
       }
 
       if (
-        ["offline.inactive", "offline.paused", "offline.stopped"].some(
-          $userState.matches
-        )
+        [
+          "offline.inactive",
+          "offline.paused",
+          "offline.pauseScheduled",
+          "offline.stopped",
+        ].some($userState.matches)
       ) {
         userState.send("START");
       }

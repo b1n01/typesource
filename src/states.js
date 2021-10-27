@@ -34,8 +34,16 @@ export const userState = interpret(
           },
           active: {
             on: {
+              PAUSE: "pauseScheduled",
+              STOP: "stopped",
+              END: "ended",
+            },
+          },
+          pauseScheduled: {
+            on: {
               PAUSE: "paused",
               STOP: "stopped",
+              START: "active",
               END: "ended",
             },
           },
