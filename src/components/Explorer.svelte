@@ -185,7 +185,7 @@
 
       {#if $repos.length && !$selectedRepo}
         <!-- Repos list -->
-        <ul class="mt-4 max-h-64 overflow-y-auto">
+        <ul class="mt-4 max-h-64 overflow-y-auto scroll">
           {#each $repos as repo}
             <li>
               <div
@@ -201,7 +201,7 @@
 
       {#if $files.length}
         <!-- File list -->
-        <ul class="mt-4 max-h-64 overflow-y-auto">
+        <ul class="mt-4 max-h-64 overflow-y-auto scroll">
           {#if $repoCurrentUrl !== $repoBaseUrl}
             <li on:click={goToParentFolder}>
               <div class="flex p-2 hover:bg-highlight rounded cursor-pointer">
@@ -232,3 +232,26 @@
     {/if}
   {/if}
 </Box>
+
+<style>
+  /* See https://digitalocean.com/community/tutorials/css-scrollbars */
+  /* Works on Firefox */
+  .scroll {
+    scrollbar-width: auto;
+    scrollbar-color: #1f2937 #283548;
+  }
+
+  /* Works on Chrome, Edge, and Safari */
+  .scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scroll::-webkit-scrollbar-track {
+    background: #283548;
+  }
+
+  .scroll::-webkit-scrollbar-thumb {
+    background-color: #1f2937;
+    border-radius: 3px;
+  }
+</style>
