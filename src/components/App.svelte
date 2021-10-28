@@ -24,9 +24,9 @@
         <div class="mb-4 xl:mb-8">
           <Explorer />
         </div>
-        <div>
+        <!-- <div>
           <Match />
-        </div>
+        </div> -->
       </div>
       <div class="w-2/3 m-4 ml-2 xl:m-8 xl:ml-4 2xl:w-3/4">
         <Editor />
