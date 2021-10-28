@@ -152,6 +152,12 @@
         endLineNumber: $position.lineNumber,
       });
 
+      if (!nextChar) {
+        // If there is not a next char it means that the user
+        // reached the end of the file. We should end the session
+        userState.send("END");
+      }
+
       // If the user typed the correct character move one position to the right
       if (nextChar === typedKey) {
         $position.column++;
