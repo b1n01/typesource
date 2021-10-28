@@ -26,32 +26,29 @@ export const userState = interpret(
           inactive: {
             on: { START: "active" },
           },
-          stopped: {
-            on: { START: "active" },
-          },
-          ended: {
-            on: { START: "active", RESET: "inactive" },
-          },
           active: {
             on: {
-              PAUSE: "pauseScheduled",
-              STOP: "stopped",
+              PAUSE: "pausing",
+              STOP: "inactive",
               END: "ended",
             },
           },
-          pauseScheduled: {
+          pausing: {
             on: {
+              STOP: "inactive",
               PAUSE: "paused",
-              STOP: "stopped",
               START: "active",
               END: "ended",
             },
           },
           paused: {
             on: {
-              STOP: "stopped",
+              STOP: "inactive",
               START: "active",
             },
+          },
+          ended: {
+            on: { START: "active", RESET: "inactive" },
           },
         },
       },

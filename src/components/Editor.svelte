@@ -102,9 +102,7 @@
   const preventPositionChange = () => {
     editor.onDidChangeCursorPosition((e) => {
       if (
-        ["offline.inactive", "offline.stopped", "online.lobby"].some(
-          $userState.matches
-        ) ||
+        ["offline.inactive", "online.lobby"].some($userState.matches) ||
         e.source === "api"
       ) {
         $position = { ...editor.getPosition() };
@@ -132,26 +130,16 @@
   // Catch user keypress and check if the cursor should move
   const handleTyping = () => {
     editor.onKeyDown((e) => {
-      if (["offline.inactive", "offline.stopped"].some($userState.matches)) {
+      const typedKey = e.browserEvent.key; // typed key
+
+      if (altKeys.includes(typedKey)) return;
+
+      if ($userState.matches("offline.inactive")) {
         startPosition = $position;
         errorPositions = [];
       }
 
-      if (
-        [
-          "offline.inactive",
-          "offline.paused",
-          "offline.pauseScheduled",
-          "offline.stopped",
-        ].some($userState.matches)
-      ) {
-        userState.send("START");
-      }
-
-      const typedKey = e.browserEvent.key; // typed key
-      if (altKeys.includes(typedKey)) {
-        return;
-      }
+      userState.send("START");
 
       let typedChars = [...$keystrokes.typedChars, typedKey];
       let correctChars = $keystrokes.correctChars;
