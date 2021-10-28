@@ -152,12 +152,6 @@
         endLineNumber: $position.lineNumber,
       });
 
-      if (!nextChar) {
-        // If there is not a next char it means that the user
-        // reached the end of the file. We should end the session
-        userState.send("END");
-      }
-
       // If the user typed the correct character move one position to the right
       if (nextChar === typedKey) {
         $position.column++;
@@ -177,9 +171,17 @@
       // than go on next line
       if (!nextChar && typedKey === "Enter") {
         $position.lineNumber++;
+        let lineText;
+
+        try {
+          lineText = editor.getModel().getLineContent($position.lineNumber);
+        } catch (e) {
+          // If there is not a next char it means that the user
+          // reached the end of the file. We should end the session
+          userState.send("END");
+        }
 
         // Find out first non whitespace position on next line
-        let lineText = editor.getModel().getLineContent($position.lineNumber);
         let firstNotWhiteSpace = lineText.match(/\S/);
         let culumn = firstNotWhiteSpace ? firstNotWhiteSpace.index : 0;
         $position.column = culumn + 1;
