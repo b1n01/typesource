@@ -43,6 +43,9 @@ export const init = () => {
       addDoc(collection(db, "metrics"), data);
       resetKeystrokes();
       resetMetrics();
+    } else if (state.matches("offline.inactive")) {
+      resetKeystrokes();
+      resetMetrics();
     }
   });
 };

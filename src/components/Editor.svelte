@@ -305,7 +305,12 @@
 
   // Remove listeners when component is destroyed
   onDestroy(() => {
+    // Set the user as stopped
+    userState.send("STOP");
+
+    // Remove listener on key down
     document.onkeydown = null;
+
     // This check is needed to avoid development error with webpack hot-reload
     if (typeof unsubscribeUserState === "function") unsubscribeUserState();
   });
