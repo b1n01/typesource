@@ -16,7 +16,10 @@
   const altKeys = ["Shift", "Control", "Alt", "CapsLock", "Backspace"]; // keys that we should not consider as typed keys
 
   // Reset position to 1, 1
-  const resetPosition = () => ($position = { lineNumber: 1, column: 1 });
+  const resetPosition = () => {
+    $position = { lineNumber: 1, column: 1 };
+    scrollTop();
+  };
 
   // Create the editor with custom theme
   const createEditor = () => {
@@ -232,7 +235,7 @@
   };
 
   // Set editor position from local position object
-  const updateLocalPosition = () => {
+  const updatePosition = () => {
     editor.setPosition($position);
   };
 
@@ -249,6 +252,11 @@
         e.preventDefault();
       }
     };
+  };
+
+  // Scroll the editor to the top
+  const scrollTop = () => {
+    editor.setScrollPosition({ scrollTop: 0 });
   };
 
   tick().then(() => {
@@ -289,14 +297,11 @@
   // Reset decoration (gray text) when the match finishes
   $: editor && $userState.matches("online.finished") && resetPosition();
 
-  // Update local editor position
-  $: editor && $position && updateLocalPosition();
+  // Update editor position when the position changes
+  $: editor && $position && updatePosition();
 
   // When the position changes update the decorations
   $: editor && $position && updateDecorations();
-
-  // Update editor position when the position changes
-  $: editor && $position && editor.setPosition($position);
 
   // When the user state goes from ended to inactive (closes the end session chart)
   // set focus on the editor to let the user starts a new match easily
