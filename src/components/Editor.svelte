@@ -193,6 +193,7 @@
   // Handle file url change
   const handleFileUrlUpdate = () => {
     const url = $fileUrl;
+    setEditorContent("Loading content...");
 
     if (url) {
       fetch(url)
