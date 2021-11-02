@@ -150,9 +150,7 @@
     </Input>
 
     {#if loading}
-      <span class="h-32 flex justify-center items-center">
-        <Loader />
-      </span>
+      <Loader class="h-32 justify-center" />
     {:else}
       {#if $selectedRepo}
         <!-- Breadcrumb -->
